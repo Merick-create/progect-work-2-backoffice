@@ -11,8 +11,7 @@ import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
   styleUrl: './bike-typologies.component.css'
 })
 export class BikeTypologiesComponent {
-
-
+  protected bikeTypologyService = inject(BikeTypologiesService);
 
 
   protected authSrv = inject(AuthService);
@@ -29,7 +28,7 @@ export class BikeTypologiesComponent {
         return this.refresh$.pipe(
   
           switchMap(() =>
-            this.bikeTypologiesService.getAll().pipe(
+            this.bikeTypologyService.getAll().pipe(
   
               catchError(err => {
                 console.error(err);

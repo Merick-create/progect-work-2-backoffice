@@ -1,5 +1,5 @@
 export interface LocationEntity {
-    id: number;
+    id: string;
     name: string;
     address: string;
     city: string;

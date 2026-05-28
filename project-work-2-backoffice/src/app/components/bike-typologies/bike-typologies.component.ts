@@ -13,6 +13,7 @@ export class BikeTypologiesComponent {
   loading = false;
   error = '';
   
+  
   showForm = false;
   editingId: string | null = null;
   formModel = {

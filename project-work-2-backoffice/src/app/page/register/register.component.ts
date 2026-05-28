@@ -21,7 +21,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   registerForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
+    username: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
     role: ['', Validators.required]
   });
@@ -46,7 +46,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   this.authSrv.register({
     firstName: formValue.firstName || '',
     lastName: formValue.lastName || '',
-    email: formValue.email || '',
+    username: formValue.username || '',
     password: formValue.password || '',
     role: formValue.role || ''
   })

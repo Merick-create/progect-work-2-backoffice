@@ -40,8 +40,8 @@ export class AuthService {
                       );
 
 
-  login(email: string, password: string) {
-    return this.http.post<any>(`/api/login`, {email, password})
+  login(username: string, password: string) {
+    return this.http.post<any>(`/api/login`, {username, password})
       .pipe(
         tap(res => this.jwtSrv.setToken(res.token)),
         tap(res => this._currentUser$.next(res.user)),
@@ -49,7 +49,7 @@ export class AuthService {
       );
   }
 
-  register(user: {firstName: string;lastName: string;email: string;password: string;role: string;}) {
+  register(user: {firstName: string;lastName: string;username: string;password: string;role: string;}) {
   return this.http.post<User>(`/api/register`, user)
 }
 

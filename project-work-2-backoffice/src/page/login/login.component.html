@@ -1,0 +1,54 @@
+<div class="page">
+
+  <div class="card">
+
+    <h1>Bentornato</h1>
+    <p class="subtitle">Accedi alla tua area riservata Prospettiva</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <!-- EMAIL -->
+      <label>Email address</label>
+      <div class="input-box">
+        <span class="icon">✉</span>
+        <input type="email" formControlName="email" placeholder="nome@azienda.it">
+      </div>
+
+      <!-- PASSWORD -->
+      <label>Password</label>
+      <div class="input-box">
+        <span class="icon">🔒</span>
+        <input type="password" formControlName="password" placeholder="••••••••">
+      </div>
+
+      <!-- ERROR -->
+      <div class="error" *ngIf="loginError">
+        {{ loginError }}
+      </div>
+
+      <!-- ROW -->
+      <div class="row">
+        <label class="remember">
+          <input type="checkbox">
+          Ricordami
+        </label>
+
+        <a routerLink="/forgot-password">Password dimenticata?</a>
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit" [disabled]="loading">
+        <span *ngIf="!loading">Accedi →</span>
+        <span *ngIf="loading">Caricamento...</span>
+      </button>
+
+    </form>
+
+    <div class="footer">
+      Non hai un account?
+      <a [routerLink]="['/register']">Registrati</a>
+    </div>
+
+  </div>
+
+</div>

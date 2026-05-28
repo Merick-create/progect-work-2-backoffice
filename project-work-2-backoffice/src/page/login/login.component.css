@@ -1,0 +1,122 @@
+.page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fb;
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+
+/* CARD */
+.card {
+  width: 420px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 40px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+h1 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+/* LABEL */
+label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* INPUT */
+.input-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  gap: 8px;
+  background: #fff;
+}
+
+.input-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+.icon {
+  color: #64748b;
+}
+
+/* ERROR */
+.error {
+  margin-top: 10px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* ROW */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.row a {
+  color: #00327d;
+  text-decoration: none;
+}
+
+/* CHECKBOX */
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #00327d;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #0047ab;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.footer a {
+  color: #00327d;
+  font-weight: 600;
+  text-decoration: none;
+}

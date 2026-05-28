@@ -1,0 +1,48 @@
+<div class="page">
+
+  <h1>Richieste</h1>
+  <p>Scegli una richiesta per iniziare</p>
+  <button class="btn btn-primary" (click)="openAdd()">
+      + Aggiungi richiesta
+  </button>
+
+  <div class="category-card" *ngFor="let r of request$ | async">
+
+  <div class="category-icon">📁</div>
+
+  <div class="category-desc">
+    {{ r.dataInizio |date:"medium"}}
+  </div>
+
+  <div class="category-desc">
+    {{ r.dataFine |date:"medium"}}
+  </div>
+
+  <div class="category-desc">
+    {{ r.stato }}
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="mt-2 d-flex gap-2"
+     *ngIf="r.stato === 'In attesa'">
+
+    <button class="btn btn-sm btn-warning"
+            (click)="editRequest(r)">
+      Modifica
+    </button>
+
+    <button class="btn btn-sm btn-danger"
+            (click)="deleteRequest(r.id)">
+      Elimina
+    </button>
+
+    <button class="btn btn-sm btn-success"
+            (click)="approveRequest(r.id)">
+      Approva
+    </button>
+
+  </div>
+
+</div>
+
+</div>

@@ -1,0 +1,68 @@
+<div class="page">
+
+  <div class="card">
+
+    <h1>Crea account</h1>
+    <p class="subtitle">Registrati alla piattaforma Prospettiva</p>
+
+    <form (ngSubmit)="register()" [formGroup]="registerForm">
+
+      <!-- FIRST NAME -->
+      <label>First Name</label>
+      <div class="input-box">
+        <span class="icon">👤</span>
+        <input type="text" formControlName="firstName" placeholder="Mario">
+      </div>
+
+      <!-- LAST NAME -->
+      <label>Last Name</label>
+      <div class="input-box">
+        <span class="icon">👤</span>
+        <input type="text" formControlName="lastName" placeholder="Rossi">
+      </div>
+
+      <!-- EMAIL -->
+      <label>Email</label>
+      <div class="input-box">
+        <span class="icon">✉</span>
+        <input type="email" formControlName="email" placeholder="nome@azienda.it">
+      </div>
+
+      <!-- PASSWORD -->
+      <label>Password</label>
+      <div class="input-box">
+        <span class="icon">🔒</span>
+        <input type="password" formControlName="password" placeholder="••••••••">
+      </div>
+
+      <!-- ROLE -->
+      <label>Role</label>
+      <div class="input-box">
+        <span class="icon">🛡</span>
+        <select formControlName="role">
+          <option value="">-- Seleziona ruolo --</option>
+          <option value="role1">role1</option>
+          <option value="role2">role2</option>
+        </select>
+      </div>
+
+      <!-- ERROR -->
+      <div class="error" *ngIf="registerError">
+        {{ registerError }}
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit">
+        Registrati →
+      </button>
+
+    </form>
+
+    <div class="footer">
+      Hai già un account?
+      <a [routerLink]="['/login']">Accedi</a>
+    </div>
+
+  </div>
+
+</div>

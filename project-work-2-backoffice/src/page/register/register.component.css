@@ -1,0 +1,120 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fb;
+  font-family: 'Hanken Grotesk', sans-serif;
+  padding: 20px;
+}
+
+/* CARD */
+.card {
+  width: 420px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 40px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+h1 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+/* LABEL */
+label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* INPUT BOX */
+.input-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  gap: 8px;
+  background: #fff;
+  transition: 0.2s;
+}
+
+.input-box:focus-within {
+  border-color: #00327d;
+}
+
+/* INPUT */
+.input-box input,
+.input-box select {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+  color: #0f172a;
+}
+
+/* ICON */
+.icon {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* ERROR */
+.error {
+  margin-top: 10px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  background: #00327d;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #0047ab;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.footer a {
+  color: #00327d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ERROR TEXT */
+.text-danger {
+  margin-top: 10px;
+  color: #b91c1c;
+  font-size: 13px;
+}

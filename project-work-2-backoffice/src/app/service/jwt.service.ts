@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class JwtService {
-  protected storageKey = 'authToken';
+  protected storageKey = 'accessToken';
 
   hasToken() {
     return !!this.getToken();

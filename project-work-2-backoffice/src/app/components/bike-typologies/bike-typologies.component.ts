@@ -11,9 +11,9 @@ import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
   styleUrl: './bike-typologies.component.css'
 })
 export class BikeTypologiesComponent {
-  
-  protected bikeTypologiesService = inject(BikeTypologiesService);
-  
+
+
+
 
   protected authSrv = inject(AuthService);
 

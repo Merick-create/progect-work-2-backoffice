@@ -7,7 +7,7 @@ import { BikeTypology } from '../../../enity/bike-typologies/bike-typologies-ent
   providedIn: 'root'
 })
 export class BikeTypologiesService {
-    private apiUrl = 'api/bike-typologies'; 
+    private apiUrl = '/api/bike-typologies'; 
 
   constructor(private http: HttpClient) { }
 

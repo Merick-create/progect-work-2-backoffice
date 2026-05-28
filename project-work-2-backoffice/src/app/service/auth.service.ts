@@ -7,6 +7,7 @@ import { User } from '../../enity/user/user-entity';
 
 
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,11 +16,14 @@ export class AuthService {
   protected jwtSrv = inject(JwtService);
   protected router = inject(Router);
 
+
   protected _currentUser$ = new ReplaySubject<User | null>(1);
   currentUser$ = this._currentUser$.asObservable();
 
+
   constructor() {
     const token = this.jwtSrv.getToken();
+
 
     if (token) {
       const decoded = this.jwtSrv.decodeToken<User>();
@@ -33,11 +37,13 @@ export class AuthService {
     }
   }
 
+
   isAuthenticated$ = this.currentUser$
                       .pipe(
                         map(user => !!user),
                         distinctUntilChanged()
                       );
+
 
 
   login(username: string, password: string) {
@@ -49,9 +55,11 @@ export class AuthService {
       );
   }
 
+
   register(user: {firstName: string;lastName: string;username: string;password: string;role: string;}) {
   return this.http.post<User>(`/api/register`, user)
 }
+
 
 
   logout() {
@@ -59,4 +67,5 @@ export class AuthService {
     this._currentUser$.next(null);
   }
 
-}
+
+} 

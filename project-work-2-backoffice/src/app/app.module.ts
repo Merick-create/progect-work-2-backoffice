@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 import { RegisterComponent } from './page/register/register.component';
 import { LoginComponent } from './page/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './utils/auth.interceptor';
+import { logoutInterceptor } from './utils/logout.interceptor';
 
 
 
@@ -21,7 +24,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     FormsModule,
     ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(
+      withInterceptors([authInterceptor, logoutInterceptor])
+    )],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
-import { RequestService } from '../../service/request.service';
+import {BikesService} from "../../service/bikes.service";
 
 
 
@@ -13,7 +13,7 @@ import { RequestService } from '../../service/request.service';
 })
 export class HomeComponent {
 
-  protected requestService = inject(RequestService);
+  protected bikesService = inject(BikesService);
   protected authSrv = inject(AuthService);
 
   refresh$ = new BehaviorSubject<void>(undefined);
@@ -28,7 +28,7 @@ export class HomeComponent {
       return this.refresh$.pipe(
 
         switchMap(() =>
-          this.requestService.list().pipe(
+          this.bikesService.list().pipe(
 
             catchError(err => {
               console.error(err);
@@ -43,22 +43,5 @@ export class HomeComponent {
   );
 
 
-
-  deleteRequest(id: string) {
-
-    if (!confirm('Vuoi eliminare questa richiesta?')) return;
-
-    this.requestService.delete(id).subscribe(() => {
-      this.refresh$.next();
-    });
-  }
-
-
-  approveRequest(id: string) {
-
-    this.requestService.approveRequest(id).subscribe(() => {
-      this.refresh$.next();
-    });
-  }
 
 }

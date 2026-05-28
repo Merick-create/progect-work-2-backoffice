@@ -9,6 +9,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './utils/auth.interceptor';
 import { logoutInterceptor } from './utils/logout.interceptor';
+import { BikeTypologiesComponent } from './components/bike-typologies/bike-typologies.component';
+import {CommonModule} from "@angular/common";
+
 
 
 
@@ -16,13 +19,15 @@ import { logoutInterceptor } from './utils/logout.interceptor';
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    BikeTypologiesComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    CommonModule
   ],
   providers: [
     provideHttpClient(

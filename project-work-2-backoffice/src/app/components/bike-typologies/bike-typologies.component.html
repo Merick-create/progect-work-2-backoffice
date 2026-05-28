@@ -1,0 +1,87 @@
+<div class="bike-typologies-container">
+  <h2>Tipologie di Biciclette</h2>
+
+  <!-- Messaggio di errore -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button (click)="error = ''">Chiudi</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Caricamento tipologie...
+  </div>
+
+  <!-- Tabella -->
+  <div *ngIf="!loading && !error">
+    <button (click)="addNew()" class="btn-add">
+      + Nuova Tipologia
+    </button>
+
+    <table *ngIf="typologies.length > 0" class="typologies-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Tariffa mezza giornata (€)</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let typology of typologies">
+          <td>{{ typology.id }}</td>
+          <td>{{ typology.name }}</td>
+          <td>{{ typology.halfDateRate | currency:'EUR':'symbol' }}</td>
+          <td class="actions">
+            <button (click)="edit(typology)" class="btn-edit">Modifica</button>
+            <button (click)="delete(typology.id)" class="btn-delete">Elimina</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="typologies.length === 0" class="no-data">
+      Nessuna tipologia di bicicletta presente.
+    </p>
+  </div>
+
+  <!-- Form di aggiunta/modifica -->
+  <div *ngIf="showForm" class="form-overlay">
+    <div class="form-container">
+      <h3>{{ editingId ? 'Modifica Tipologia' : 'Nuova Tipologia' }}</h3>
+
+      <form (ngSubmit)="save()">
+        <div class="form-group">
+          <label for="name">Nome *</label>
+          <input 
+            id="name" 
+            type="text" 
+            [(ngModel)]="formModel.name" 
+            name="name"
+            required
+            placeholder="Es: City bike, Mountain bike..."
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="halfDateRate">Tariffa mezza giornata (€) *</label>
+          <input 
+            id="halfDateRate" 
+            type="number" 
+            [(ngModel)]="formModel.halfDateRate" 
+            name="halfDateRate"
+            required
+            min="0"
+            step="0.5"
+            placeholder="Es: 15.00"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save">Salva</button>
+          <button type="button" (click)="cancel()" class="btn-cancel">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

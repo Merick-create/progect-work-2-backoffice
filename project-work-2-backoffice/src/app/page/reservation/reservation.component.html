@@ -1,18 +1,14 @@
 <div class="page">
-
   <div class="container">
-
     <h1 class="title">Prenota la tua bici</h1>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="card">
-
-      <!-- STEP 1 -->
+      
+      <!-- STEP 1: Dati ritiro -->
       <div class="section">
-
         <h2 class="section-title">Dati ritiro</h2>
 
         <div class="grid">
-
           <div class="field">
             <label>Sede</label>
             <select formControlName="pickupLocation">
@@ -42,23 +38,20 @@
             <label>Data restituzione</label>
             <input type="datetime-local" formControlName="returnDateTime">
           </div>
-
         </div>
       </div>
 
-      <!-- STEP 2 -->
+      <!-- STEP 2: Scegli le bici -->
       <div class="section">
-
         <h2 class="section-title">Scegli le bici</h2>
 
         <div class="bike-grid">
-
           <div
             class="bike-card"
             *ngFor="let bike of availableBikes"
             [class.selected]="selectedBikes.includes(bike.id)"
             (click)="toggleBike(bike.id)">
-
+            
             <div class="bike-title">
               {{ bike.code }}
             </div>
@@ -72,24 +65,15 @@
                 {{ bike.available ? 'Disponibile' : 'Occupata' }}
               </span>
             </div>
-
           </div>
-
         </div>
-
-        <div *ngIf="loading" class="loading">
-          Caricamento bici disponibili...
-        </div>
-
       </div>
 
-      <!-- STEP 3 -->
+      <!-- STEP 3: Extra -->
       <div class="section">
-
         <h2 class="section-title">Extra</h2>
 
         <div class="grid">
-
           <div class="field">
             <label>Accessori</label>
             <select multiple formControlName="accessories">
@@ -108,7 +92,6 @@
               </option>
             </select>
           </div>
-
         </div>
       </div>
 
@@ -120,7 +103,5 @@
       </div>
 
     </form>
-
   </div>
-
 </div>

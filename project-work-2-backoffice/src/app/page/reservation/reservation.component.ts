@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReservationService } from '../../service/reservation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BikeService } from '../../service/bikes.service';
@@ -6,6 +6,7 @@ import { InsuranceCoverageService } from '../../service/coverage.service';
 import { BikeAccessoryService } from '../..//service/bike-accessory.service';
 import { LocationEntity } from '../../../enity/location/location-entity';
 import { LocationService } from '../../service/location.service';
+import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-reservation',
@@ -14,7 +15,17 @@ import { LocationService } from '../../service/location.service';
   styleUrl: './reservation.component.css'
 })
 export class ReservationComponent {
-    form!: FormGroup;
+    private fb = inject(FormBuilder);
+  private reservationService = inject(ReservationService);
+  private bikeService = inject(BikeService);
+  private locationService = inject(LocationService);
+  private bikeAccessoryService = inject(BikeAccessoryService);
+  private insuranceCoverageService = inject(InsuranceCoverageService);
+
+  form!: FormGroup;
+  refresh$ = new BehaviorSubject<void>(undefined);
+  loading = false;
+  submitting = false;
 
   pickupSlots = [
     '09:00','10:00','11:00','12:00','13:00',
@@ -25,20 +36,40 @@ export class ReservationComponent {
   availableBikes: any[] = [];
   accessories: any[] = [];
   insuranceCoverages: any[] = [];
-
   selectedBikes: string[] = [];
 
-  loading = false;
-  submitting = false;
+  locations$ = this.refresh$.pipe(
+    switchMap(() =>
+      this.locationService.list().pipe(
+        catchError(err => {
+          console.error(err);
+          return of([]);
+        })
+      )
+    )
+  );
 
-  constructor(
-    private fb: FormBuilder,
-    private reservationService: ReservationService,
-    private bikeService: BikeService,
-    private locationService: LocationService,
-    private bikeAccessoryService: BikeAccessoryService,
-    private insuranceCoverageService: InsuranceCoverageService
-  ) {}
+  accessories$ = this.refresh$.pipe(
+    switchMap(() =>
+      this.bikeAccessoryService.list().pipe(
+        catchError(err => {
+          console.error(err);
+          return of([]);
+        })
+      )
+    )
+  );
+
+  insuranceCoverages$ = this.refresh$.pipe(
+    switchMap(() =>
+      this.insuranceCoverageService.list().pipe(
+        catchError(err => {
+          console.error(err);
+          return of([]);
+        })
+      )
+    )
+  );
 
   ngOnInit(): void {
     this.initForm();
@@ -46,7 +77,7 @@ export class ReservationComponent {
     this.listenChanges();
   }
 
-  private initForm(): void {
+   initForm(): void {
     this.form = this.fb.group({
       pickupDate: ['', Validators.required],
       pickupTime: ['', Validators.required],
@@ -58,13 +89,13 @@ export class ReservationComponent {
     });
   }
 
-  private loadData(): void {
-    this.locationService.list().subscribe(r => this.locations = r);
-    this.bikeAccessoryService.list().subscribe(r => this.accessories = r);
-    this.insuranceCoverageService.list().subscribe(r => this.insuranceCoverages = r);
+   loadData(): void {
+    this.locations$.subscribe(r => this.locations = r);
+    this.accessories$.subscribe(r => this.accessories = r);
+    this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
   }
 
-  private listenChanges(): void {
+   listenChanges(): void {
     this.form.valueChanges.subscribe(v => {
       if (v.pickupLocation && v.pickupDate && v.pickupTime) {
         this.loadAvailableBikes(v.pickupLocation);
@@ -72,31 +103,37 @@ export class ReservationComponent {
     });
   }
 
-  private loadAvailableBikes(locationId: string): void {
+   loadAvailableBikes(locationId: string): void {
     this.loading = true;
 
     this.bikeService.getAvailable(locationId).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
         this.selectedBikes = [];
-        this.form.patchValue({ bikes: [] });
+        this.form.patchValue({ bikes: [] }, { emitEvent: false });
         this.loading = false;
       },
       error: () => this.loading = false
     });
   }
 
-  toggleBike(id: string): void {
-    if (this.selectedBikes.includes(id)) {
-      this.selectedBikes = this.selectedBikes.filter(x => x !== id);
+  toggleBike(id: string | number): void {
+    const idStr = String(id);
+    console.log('Toggle bike id:', idStr, 'current selected:', this.selectedBikes);
+    
+    if (this.selectedBikes.includes(idStr)) {
+      this.selectedBikes = this.selectedBikes.filter(x => x !== idStr);
+      console.log('Rimosso bike, ora:', this.selectedBikes);
     } else {
-      this.selectedBikes.push(id);
+      this.selectedBikes.push(idStr);
+      console.log('Aggiunto bike, ora:', this.selectedBikes);
     }
 
-    this.form.patchValue({ bikes: this.selectedBikes });
+    this.form.patchValue({ bikes: this.selectedBikes }, { emitEvent: false });
+    console.log('Form bikes value:', this.form.value.bikes);
   }
 
-  submit(): void {
+  submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -119,6 +156,7 @@ export class ReservationComponent {
         this.form.reset();
         this.selectedBikes = [];
         this.availableBikes = [];
+        this.refresh$.next();
         this.submitting = false;
       },
       error: () => {

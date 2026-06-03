@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './page/register/register.component';
@@ -9,9 +8,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './utils/auth.interceptor';
 import { logoutInterceptor } from './utils/logout.interceptor';
-import { BikeTypologiesComponent } from './components/bike-typologies/bike-typologies.component';
 import {CommonModule} from "@angular/common";
-
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 
 
@@ -20,7 +18,7 @@ import {CommonModule} from "@angular/common";
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    BikeTypologiesComponent
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

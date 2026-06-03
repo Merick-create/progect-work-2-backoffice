@@ -11,7 +11,6 @@ import { logoutInterceptor } from './utils/logout.interceptor';
 import {CommonModule} from "@angular/common";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
-
 import { HomeComponent } from '../app/page/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
 

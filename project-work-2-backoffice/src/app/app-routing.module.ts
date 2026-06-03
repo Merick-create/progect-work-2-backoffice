@@ -27,6 +27,8 @@ const routes: Routes = [
   {
     path: 'reservation',
     component: ReservationComponent
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent
   },

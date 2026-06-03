@@ -22,7 +22,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    ReservationComponent
+    ReservationComponent,
     HomeComponent,
     ProfileComponent
   ],

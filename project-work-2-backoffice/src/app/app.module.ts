@@ -10,6 +10,7 @@ import { authInterceptor } from './utils/auth.interceptor';
 import { logoutInterceptor } from './utils/logout.interceptor';
 import {CommonModule} from "@angular/common";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ReservationComponent } from './page/reservation/reservation.component';
 
 
 
@@ -18,7 +19,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    DashboardComponent
+    DashboardComponent,
+    ReservationComponent
   ],
   imports: [
     BrowserModule,

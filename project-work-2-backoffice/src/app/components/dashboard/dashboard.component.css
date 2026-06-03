@@ -26,6 +26,125 @@
   margin-right: -140px;
 }
 
+.avatar-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+
+.dropdown-menu {
+  min-width: 180px;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f3f5;
+}
+/* Colore brand principale */
+:root {
+  --bikelab-primary: #667eea;
+  --bikelab-secondary: #764ba2;
+}
+
+/* Dropdown menu generale */
+.dropdown-menu {
+  min-width: 200px;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0;
+  border: none;
+}
+
+/* Voci del dropdown */
+.dropdown-item {
+  font-size: 0.9rem;
+  padding: 0.55rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Icone nel dropdown */
+.dropdown-item i {
+  font-size: 1rem;
+  color: #6c757d;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover viola come il sito */
+.dropdown-item:hover {
+  background: linear-gradient(135deg, var(--bikelab-primary) 0%, var(--bikelab-secondary) 100%);
+  color: #fff;
+}
+
+.dropdown-item:hover i {
+  color: #fff;
+  transform: translateX(2px);
+}
+
+/* Logout: testo rosso di base, ma hover sempre viola uniforme */
+.logout-item {
+  color: #dc3545;
+}
+
+.logout-item i {
+  color: #dc3545;
+}
+
+.logout-item:hover {
+  color: #fff;
+}
+
+.logout-item:hover i {
+  color: #fff;
+}
+
+/* Avatar wrapper */
+.avatar-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar già esistente, se vuoi enfatizzare hover */
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  background: linear-gradient(135deg, var(--bikelab-primary) 0%, var(--bikelab-secondary) 100%);
+}
+
+.user-avatar:hover {
+  transform: scale(1.08);
+  border-color: #fff;
+}
+
 .nav-link {
   font-weight: 600;
   margin: 0 1rem;

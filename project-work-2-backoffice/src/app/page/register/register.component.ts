@@ -23,7 +23,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     lastName: ['', Validators.required],
     username: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
-    role: ['', Validators.required]
   });
 
   ngOnInit(): void {
@@ -47,8 +46,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     firstName: formValue.firstName || '',
     lastName: formValue.lastName || '',
     username: formValue.username || '',
-    password: formValue.password || '',
-    role: formValue.role || ''
+    password: formValue.password || ''
   })
   .pipe(
     catchError(err => {

@@ -45,4 +45,13 @@ export class DashboardComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/']);
   }
+
+  goToProfile() {
+  this.router.navigate(['/profilo']); 
+}
+
+goToBookings() {
+  this.router.navigate(['/prenotazioni']); 
+}
+
 }

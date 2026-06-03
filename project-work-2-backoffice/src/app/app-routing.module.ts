@@ -5,16 +5,16 @@ import { RegisterComponent } from './page/register/register.component';
 import { HomeComponent } from './page/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
-   {
-    path: 'login',
-    component: LoginComponent
+  {
+    path: '',
+    component: HomeComponent       // ← home come root
   },
   {
-    path:'',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    path: 'login',
+    component: LoginComponent
   },
   {
     path: 'register',
@@ -27,6 +27,16 @@ const routes: Routes = [
   {
     path: 'reservation',
     component: ReservationComponent
+    path: 'dashboard',
+    component: DashboardComponent
+  },
+  {
+    path: '**',
+    redirectTo: ''                 // opzionale: fallback alla home
+  },
+  {
+  path: 'profilo',
+  component: ProfileComponent
   }
 ];
 

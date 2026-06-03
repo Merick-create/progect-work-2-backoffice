@@ -35,17 +35,6 @@
         <input type="password" formControlName="password" placeholder="••••••••">
       </div>
 
-      <!-- ROLE -->
-      <label>Role</label>
-      <div class="input-box">
-        <span class="icon">🛡</span>
-        <select formControlName="role">
-          <option value="">-- Seleziona ruolo --</option>
-          <option value="role1">role1</option>
-          <option value="role2">role2</option>
-        </select>
-      </div>
-
       <!-- ERROR -->
       <div class="error" *ngIf="registerError">
         {{ registerError }}

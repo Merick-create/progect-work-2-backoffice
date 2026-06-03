@@ -1,26 +1,154 @@
-
-<div class="page">
-
-  <h1>Richieste</h1>
-  <p>Scegli una richiesta per iniziare</p>
-
-  <div class="category-card" *ngFor="let b of bikes$ | async">
-
-  <div class="category-icon">📁</div>
-
-  <div class="category-desc">
-    {{ b.BykeTypologyId}}
+<!-- Hero Section con immagine di sfondo animata -->
+<section class="hero-section">
+  <div class="hero-background"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content fade-in-up">
+    <h1 class="hero-title">Benvenuto su Bike Lab</h1>
+    <p class="hero-subtitle">
+      Il tuo laboratorio specializzato per biciclette. 
+      Riparazioni, manutenzione e consulenza professionale per la tua bici.
+    </p>
+    <div class="hero-buttons">
+      <a href="/register" class="btn btn-hero btn-open-account">
+        <i class="bi bi-person-plus"></i>
+        Apri un Account
+      </a>
+      <a href="#servizi" class="btn btn-hero btn-services">
+        <i class="bi bi-tools"></i>
+        Noleggia 
+      </a>
+    </div>
   </div>
+</section>
 
-  <div class="category-desc">
-    {{ b.quantity}}
+<!-- Sezione Servizi -->
+<section id="servizi" class="py-5 section-fade">
+  <div class="container">
+    <h2 class="section-title text-center mb-5">Il nostro servizio</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="service-card card h-100 shadow-sm border-0">
+          <div class="card-body text-center p-4">
+            <div class="service-icon mb-3">
+              <i class="bi bi-wrench-adjustable-circle"></i>
+            </div>
+            <h5 class="card-title fw-bold">Riparazioni</h5>
+            <p class="card-text">Servizio di riparazione completo per tutte le tipologie di biciclette. Riparazioni urgenti e su misura.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="service-card card h-100 shadow-sm border-0">
+          <div class="card-body text-center p-4">
+            <div class="service-icon mb-3">
+              <i class="bi bi-gear-wide-connected"></i>
+            </div>
+            <h5 class="card-title fw-bold">Manutenzione</h5>
+            <p class="card-text">Manutenzione ordinaria e straordinaria per mantenere la tua bici in perfette condizioni.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="service-card card h-100 shadow-sm border-0">
+          <div class="card-body text-center p-4">
+            <div class="service-icon mb-3">
+              <i class="bi bi-bicycle"></i>
+            </div>
+            <h5 class="card-title fw-bold">Vendita</h5>
+            <p class="card-text">Ampia selezione di biciclette nuove e usate, e accessori di qualità per ogni esigenza.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
-  <div class="category-desc">
-    {{ b.BikeSizeId }}
+<!-- Sezione Chi Siamo -->
+<section id="chi-siamo" class="py-5 bg-light section-fade">
+  <div class="container">
+    <h2 class="section-title text-center mb-5">Chi siamo</h2>
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="lead mb-4">
+          Bike Lab è un laboratorio specializzato nato dalla passione per le biciclette. 
+          Il nostro team di esperti è qui per aiutarti a mantenere la tua bici in perfette condizioni.
+        </p>
+        <p class="mb-4">
+          Con anni di esperienza nel settore, offriamo servizi di riparazione, manutenzione 
+          e consulenza personalizzata per ogni tipo di bicicletta: urban, mountain bike, road bike, e-bike.
+        </p>
+        <ul class="list-unstyled">
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Staff qualificato e esperto</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Attrezzature professionali</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Tempi rapidi di consegna</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Prezzi competitivi</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <div class="about-image bg-primary text-white d-flex align-items-center justify-content-center rounded-3 shadow">
+          <div class="text-center">
+            <i class="bi bi-bicycle" style="font-size: 8rem;"></i>
+            <h4 class="mt-3">Bike Lab</h4>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
+<!-- Sezione Informazioni -->
+<section id="informazioni" class="py-5 section-fade">
+  <div class="container">
+    <h2 class="section-title text-center mb-5">Informazioni</h2>
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <div class="info-card text-center p-4 bg-white shadow-sm rounded-3 h-100">
+          <div class="info-icon mb-3 text-primary">
+            <i class="bi bi-geo-alt-fill" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="fw-bold">Dove siamo</h5>
+          <p class="mb-0">Via Esempio 123<br>20000 Meda, Lombardy</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="info-card text-center p-4 bg-white shadow-sm rounded-3 h-100">
+          <div class="info-icon mb-3 text-primary">
+            <i class="bi bi-clock-fill" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="fw-bold">Orari di apertura</h5>
+          <p class="mb-0">Lun - Ven: 9:00 - 18:00<br>Sabato: 9:00 - 13:00<br>Domenica: Chiuso</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="info-card text-center p-4 bg-white shadow-sm rounded-3 h-100">
+          <div class="info-icon mb-3 text-primary">
+            <i class="bi bi-telephone-fill" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="fw-bold">Contatti</h5>
+          <p class="mb-0">Tel: +39 0123 456789<br>Email: info&#64;bikelab.it</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="info-card text-center p-4 bg-white shadow-sm rounded-3 h-100">
+          <div class="info-icon mb-3 text-primary">
+            <i class="bi bi-patch-check-fill" style="font-size: 2.5rem;"></i>
+          </div>
+          <h5 class="fw-bold">Servizi</h5>
+          <p class="mb-0">Riparazioni urgenti<br>Manutenzione programmata<br>Consulenza personalizzata</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div>
-
-</div>
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+  <div class="container text-center">
+    <div class="mb-3">
+      <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+      <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+      <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+    </div>
+    <p class="mb-0">&copy; 2026 Bike Lab. Tutti i diritti riservati.</p>
+  </div>
+</footer>

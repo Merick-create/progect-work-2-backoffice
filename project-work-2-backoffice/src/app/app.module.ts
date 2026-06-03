@@ -10,7 +10,8 @@ import { authInterceptor } from './utils/auth.interceptor';
 import { logoutInterceptor } from './utils/logout.interceptor';
 import {CommonModule} from "@angular/common";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-
+import { HomeComponent } from '../app/page/home/home.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 @NgModule({
@@ -18,7 +19,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    DashboardComponent
+    DashboardComponent,
+    HomeComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

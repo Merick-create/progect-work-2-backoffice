@@ -6,12 +6,13 @@ import { HomeComponent } from './page/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { MyReservationsComponent } from './page/my-reservations/my-reservations.component';
 import { authGuard } from './utils/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent       // ← home come root
+    component: HomeComponent
   },
   {
     path: 'login',
@@ -27,21 +28,26 @@ const routes: Routes = [
   },
   {
     path: 'reservation',
-    canActivate:[authGuard],
-    component: ReservationComponent
+    component: ReservationComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'dashboard',
     component: DashboardComponent
   },
   {
-    path: '**',
-    redirectTo: ''                 
+    path: 'my-reservations',
+    component: MyReservationsComponent,
+    canActivate: [authGuard]
   },
   {
-  path: 'profilo',
-  canActivate:[authGuard],
-  component: ProfileComponent
+    path: 'profilo',
+    component: ProfileComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];
 

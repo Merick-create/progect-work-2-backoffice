@@ -1,4 +1,6 @@
 export interface Reservation {
+  id?: string;
+  status?: string;
   pickupDate: Date;
   pickupTime: string;
   pickupLocation: string;
@@ -6,4 +8,6 @@ export interface Reservation {
   bikes: string[];
   accessories?: string[];
   insuranceCoverage?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

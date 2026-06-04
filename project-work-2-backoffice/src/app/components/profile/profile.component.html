@@ -3,11 +3,10 @@
 
   <div class="container">
     <div class="profile-card shadow-lg">
-      <!-- Avatar + nome -->
       <div class="profile-header text-center">
         <div class="profile-avatar-wrapper">
           <div class="profile-avatar">
-            {{ user?.firstName?.[0] }}{{ user?.lastName?.[0] }}
+            <span class="profile-initials">{{ user?.firstName?.[0] }}{{ user?.lastName?.[0] }}</span>
           </div>
         </div>
         <h2 class="profile-name">
@@ -18,8 +17,7 @@
         </p>
       </div>
 
-      <!-- Info non editabili -->
-      <div class="row g-3 mb-4 profile-info-row">
+      <div class="row g-4 mb-4 profile-info-row">
         <div class="col-md-4">
           <div class="profile-info-box">
             <div class="label">Nome</div>
@@ -32,11 +30,18 @@
             <div class="value">{{ user?.lastName }}</div>
           </div>
         </div>
+        <div class="col-md-4">
+          <div class="profile-info-box">
+            <div class="label">Email</div>
+            <div class="value">{{ user?.email || '—' }}</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Form impostazioni -->
+      <div class="profile-divider"></div>
+
       <div class="profile-form-wrapper">
-        <h4 class="mb-3">Impostazioni account</h4>
+        <h4>Impostazioni account</h4>
 
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
           <div class="mb-3">
@@ -70,7 +75,7 @@
             </div>
           </div>
 
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <button type="submit"
                     class="btn btn-primary"
                     [disabled]="!profileForm.valid || saving">
@@ -84,6 +89,12 @@
             <div class="text-success small fade-in" *ngIf="saved">
               Modifiche salvate con successo!
             </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top">
+            <a routerLink="/my-reservations" class="btn btn-outline-primary w-100">
+              <i class="bi bi-calendar-check me-1"></i> Le mie prenotazioni
+            </a>
           </div>
         </form>
       </div>

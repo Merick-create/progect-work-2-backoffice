@@ -9,7 +9,11 @@ export class UserService {
   protected http = inject(HttpClient);
 
   list(role:string) {
-    return this.http.get<User[]>('${environment.apiUrl}/users',{params:{role}});
+    return this.http.get<User[]>(`/api/users`,{params:{role}});
+  }
+
+  getMe() {
+    return this.http.get<User>(`/api/users/me`);
   }
 
 }

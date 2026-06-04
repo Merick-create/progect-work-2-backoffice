@@ -13,6 +13,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
 import { HomeComponent } from '../app/page/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { MyReservationsComponent } from './page/my-reservations/my-reservations.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { ProfileComponent } from './components/profile/profile.component';
     DashboardComponent,
     ReservationComponent,
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    MyReservationsComponent
   ],
   imports: [
     BrowserModule,

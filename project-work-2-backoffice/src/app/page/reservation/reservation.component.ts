@@ -15,7 +15,7 @@ import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
   styleUrl: './reservation.component.css'
 })
 export class ReservationComponent {
-    private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
   private reservationService = inject(ReservationService);
   private bikeService = inject(BikeService);
   private locationService = inject(LocationService);
@@ -41,10 +41,7 @@ export class ReservationComponent {
   locations$ = this.refresh$.pipe(
     switchMap(() =>
       this.locationService.list().pipe(
-        catchError(err => {
-          console.error(err);
-          return of([]);
-        })
+        catchError(err => { console.error(err); return of([]); })
       )
     )
   );
@@ -52,10 +49,7 @@ export class ReservationComponent {
   accessories$ = this.refresh$.pipe(
     switchMap(() =>
       this.bikeAccessoryService.list().pipe(
-        catchError(err => {
-          console.error(err);
-          return of([]);
-        })
+        catchError(err => { console.error(err); return of([]); })
       )
     )
   );
@@ -63,10 +57,7 @@ export class ReservationComponent {
   insuranceCoverages$ = this.refresh$.pipe(
     switchMap(() =>
       this.insuranceCoverageService.list().pipe(
-        catchError(err => {
-          console.error(err);
-          return of([]);
-        })
+        catchError(err => { console.error(err); return of([]); })
       )
     )
   );
@@ -77,7 +68,7 @@ export class ReservationComponent {
     this.listenChanges();
   }
 
-   initForm(): void {
+  initForm(): void {
     this.form = this.fb.group({
       pickupDate: ['', Validators.required],
       pickupTime: ['', Validators.required],
@@ -89,13 +80,13 @@ export class ReservationComponent {
     });
   }
 
-   loadData(): void {
+  loadData(): void {
     this.locations$.subscribe(r => this.locations = r);
     this.accessories$.subscribe(r => this.accessories = r);
     this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
   }
 
-   listenChanges(): void {
+  listenChanges(): void {
     this.form.valueChanges.subscribe(v => {
       if (v.pickupLocation && v.pickupDate && v.pickupTime) {
         this.loadAvailableBikes(v.pickupLocation);
@@ -103,9 +94,8 @@ export class ReservationComponent {
     });
   }
 
-   loadAvailableBikes(locationId: string): void {
+  loadAvailableBikes(locationId: string): void {
     this.loading = true;
-
     this.bikeService.getAvailable(locationId).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
@@ -119,18 +109,12 @@ export class ReservationComponent {
 
   toggleBike(id: string | number): void {
     const idStr = String(id);
-    console.log('Toggle bike id:', idStr, 'current selected:', this.selectedBikes);
-    
     if (this.selectedBikes.includes(idStr)) {
       this.selectedBikes = this.selectedBikes.filter(x => x !== idStr);
-      console.log('Rimosso bike, ora:', this.selectedBikes);
     } else {
       this.selectedBikes.push(idStr);
-      console.log('Aggiunto bike, ora:', this.selectedBikes);
     }
-
     this.form.patchValue({ bikes: this.selectedBikes }, { emitEvent: false });
-    console.log('Form bikes value:', this.form.value.bikes);
   }
 
   submit() {

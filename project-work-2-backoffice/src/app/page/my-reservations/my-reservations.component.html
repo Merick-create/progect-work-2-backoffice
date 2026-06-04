@@ -8,6 +8,7 @@
     </div>
 
     <ng-container *ngIf="!loading">
+
       <div class="empty-state" *ngIf="reservations.length === 0">
         <i class="bi bi-calendar-x"></i>
         <h3>Nessuna prenotazione</h3>
@@ -15,60 +16,137 @@
         <a routerLink="/reservation" class="btn-primary">Prenota ora</a>
       </div>
 
-      <!-- Corrente -->
-      <div class="card current-card" *ngIf="currentReservation">
+      <!-- NOLEGGI IN CORSO -->
+      <div class="card current-card" *ngIf="inRentalReservations.length > 0">
         <div class="card-header">
           <span class="badge active">In corso</span>
-          <h2>Prenotazione attuale</h2>
+          <h2>Noleggi attivi</h2>
         </div>
+
         <div class="card-body">
-          <div class="detail-row">
-            <span class="label">Ritiro</span>
-            <span class="value">{{ currentReservation.pickupDate | date:'dd/MM/yyyy' }} alle {{ currentReservation.pickupTime }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Restituzione</span>
-            <span class="value">{{ currentReservation.returnDateTime | date:'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-          <div class="detail-row" *ngIf="currentReservation.bikes">
-            <span class="label">Bici</span>
-            <span class="value">{{ currentReservation.bikes.length }} bici</span>
+          <div
+            class="reservation-item"
+            *ngFor="let r of inRentalReservations"
+          >
+            <div class="item-info">
+
+              <span class="item-date">pmk 9buyàò
+                {{ r.pickupDate | date:'dd/MM/yyyy' }}
+                -
+                {{ r.pickupTime }}
+              </span>
+
+              <span class="item-return">
+                Fino al
+                {{ r.returnDateTime | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+
+              <span class="item-status">
+                {{ r.bikes.length || 0 }} bici
+              </span>
+
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Prossime -->
-      <div class="card" *ngIf="upcomingReservations.length > 0">
+      <!-- PRENOTAZIONI ATTIVE (PENDING) -->
+      <div class="card current-card" *ngIf="currentReservations.length > 0">
         <div class="card-header">
           <span class="badge pending">In attesa</span>
-          <h2>Prossime prenotazioni</h2>
+          <h2>Prenotazioni in attesa</h2>
         </div>
+
         <div class="card-body">
-          <div class="reservation-item" *ngFor="let r of upcomingReservations">
+          <div
+            class="reservation-item"
+            *ngFor="let r of currentReservations"
+          >
             <div class="item-info">
-              <span class="item-date">{{ r.pickupDate | date:'dd/MM/yyyy' }} - {{ r.pickupTime }}</span>
-              <span class="item-return">Fino al {{ r.returnDateTime | date:'dd/MM/yyyy HH:mm' }}</span>
+
+              <span class="item-date">
+                {{ r.pickupDate | date:'dd/MM/yyyy' }}
+                -
+                {{ r.pickupTime }}
+              </span>
+
+              <span class="item-return">
+                Fino al
+                {{ r.returnDateTime | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+
+              <span class="item-status">
+                {{ r.bikes.length || 0 }} bici
+              </span>
+
             </div>
-            <button class="btn-cancel" (click)="cancelReservation(r.id!)" *ngIf="r.id">Annulla</button>
           </div>
         </div>
       </div>
 
-      <!-- Passate -->
-      <div class="card" *ngIf="pastReservations.length > 0">
+      <!-- COMPLETATE -->
+      <div class="card" *ngIf="completedReservations.length > 0">
         <div class="card-header">
           <span class="badge completed">Completate</span>
-          <h2>Prenotazioni passate</h2>
+          <h2>Prenotazioni completate</h2>
         </div>
+
         <div class="card-body">
-          <div class="reservation-item past" *ngFor="let r of pastReservations">
+          <div
+            class="reservation-item past"
+            *ngFor="let r of completedReservations"
+          >
             <div class="item-info">
-              <span class="item-date">{{ r.pickupDate | date:'dd/MM/yyyy' }} - {{ r.pickupTime }}</span>
-              <span class="item-status">{{ r.status }}</span>
+
+              <span class="item-date">
+                {{ r.pickupDate | date:'dd/MM/yyyy' }}
+                -
+                {{ r.pickupTime }}
+              </span>
+
+              <span class="item-return">
+                Restituita il
+                {{ r.returnDateTime | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+
+              <span class="item-status">
+                {{ r.status }}
+              </span>
+
             </div>
           </div>
         </div>
       </div>
+
+      <!-- ANNULLATE -->
+      <div class="card" *ngIf="cancelledReservations.length > 0">
+        <div class="card-header">
+          <span class="badge cancelled">Annullate</span>
+          <h2>Prenotazioni annullate</h2>
+        </div>
+
+        <div class="card-body">
+          <div
+            class="reservation-item past"
+            *ngFor="let r of cancelledReservations"
+          >
+            <div class="item-info">
+
+              <span class="item-date">
+                {{ r.pickupDate | date:'dd/MM/yyyy' }}
+                -
+                {{ r.pickupTime }}
+              </span>
+
+              <span class="item-status">
+                {{ r.status }}
+              </span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </ng-container>
   </div>
 </div>

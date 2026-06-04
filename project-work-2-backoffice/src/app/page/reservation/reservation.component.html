@@ -1,82 +1,176 @@
-<div class="page">
+<div class="reservation-page">
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="bi bi-bicycle"></i>
+      </div>
+      <h1 class="hero-title">Prenota la tua bici</h1>
+      <p class="hero-subtitle">Scegli data, modello e accessori per la tua prossima pedalata</p>
+    </div>
+  </div>
+
   <div class="container">
-    <h1 class="title">Prenota la tua bici</h1>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="reservation-form">
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="card">
-      
-      <div class="section">
-        <h2 class="section-title">Dati ritiro</h2>
-
-        <div class="grid">
-          <div class="field">
-            <label>Sede</label>
-            <select formControlName="pickupLocation">
-              <option value="">Seleziona sede</option>
-              <option *ngFor="let l of locations" [value]="l.id">{{ l.name }}</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Data ritiro</label>
-            <input type="date" formControlName="pickupDate">
-          </div>
-
-          <div class="field">
-            <label>Orario</label>
-            <select formControlName="pickupTime">
-              <option value="">Seleziona orario</option>
-              <option *ngFor="let s of pickupSlots" [value]="s">{{ s }}</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Data restituzione</label>
-            <input type="datetime-local" formControlName="returnDateTime">
+      <!-- Step 1: Dati ritiro -->
+      <div class="form-step">
+        <div class="step-header">
+          <span class="step-number">1</span>
+          <div class="step-info">
+            <h2 class="step-title">Dati ritiro</h2>
+            <p class="step-desc">Seleziona sede e orari per il noleggio</p>
           </div>
         </div>
-      </div>
 
-      <div class="section">
-        <h2 class="section-title">Scegli le bici</h2>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-geo-alt"></i>
+              Sede di ritiro
+            </label>
+            <div class="input-wrapper">
+              <select formControlName="pickupLocation">
+                <option value="">Seleziona sede</option>
+                <option *ngFor="let l of locations" [value]="l.id">{{ l.name }}</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
 
-        <div class="bike-grid">
-          <div class="bike-card" *ngFor="let bike of availableBikes"
-            [class.selected]="selectedBikes.includes(bike.id)"
-            (click)="toggleBike(bike.id)">
-            <div class="bike-title">{{ bike.code }}</div>
-            <div class="bike-info">{{ bike.bikeTypology?.name }} · {{ bike.bikeSize?.name }}</div>
-            <div class="bike-footer">
-              <span class="status" [class.ok]="bike.available">{{ bike.available ? 'Disponibile' : 'Occupata' }}</span>
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-calendar"></i>
+              Data ritiro
+            </label>
+            <div class="input-wrapper">
+              <input type="date" formControlName="pickupDate">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-clock"></i>
+              Orario
+            </label>
+            <div class="input-wrapper">
+              <select formControlName="pickupTime">
+                <option value="">Seleziona orario</option>
+                <option *ngFor="let s of pickupSlots" [value]="s">{{ s }}</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-calendar-check"></i>
+              Restituzione
+            </label>
+            <div class="input-wrapper">
+              <input type="datetime-local" formControlName="returnDateTime">
             </div>
           </div>
         </div>
-        <div class="loading" *ngIf="loading">Caricamento bici disponibili...</div>
       </div>
 
-      <div class="section">
-        <h2 class="section-title">Extra</h2>
-
-        <div class="grid">
-          <div class="field">
-            <label>Accessori</label>
-            <select multiple formControlName="accessories">
-              <option *ngFor="let a of accessories" [value]="a.id">{{ a.name }}</option>
-            </select>
+      <!-- Step 2: Scegli bici -->
+      <div class="form-step">
+        <div class="step-header">
+          <span class="step-number">2</span>
+          <div class="step-info">
+            <h2 class="step-title">Scegli le bici</h2>
+            <p class="step-desc">Seleziona una o più bici tra quelle disponibili</p>
           </div>
+        </div>
 
-          <div class="field">
-            <label>Assicurazione</label>
-            <select formControlName="insuranceCoverage">
-              <option value="">Nessuna</option>
-              <option *ngFor="let i of insuranceCoverages" [value]="i.id">{{ i.name }}</option>
-            </select>
+        <div class="loading-state" *ngIf="loading">
+          <div class="spinner"></div>
+          <span>Caricamento bici disponibili...</span>
+        </div>
+
+        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0 && form.value.pickupLocation">
+          <i class="bi bi-emoji-frown"></i>
+          <p>Nessuna bici disponibile per questa sede.<br>Prova a cambiare sede o data.</p>
+        </div>
+
+        <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
+          <div class="bike-card" *ngFor="let bike of availableBikes"
+            [class.selected]="selectedBikes.includes(bike.id)"
+            (click)="toggleBike(bike.id)">
+            <div class="bike-card-bg"></div>
+            <div class="bike-select-indicator">
+              <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="bike-icon">
+              <i class="bi bi-bicycle"></i>
+            </div>
+            <div class="bike-code">{{ bike.code }}</div>
+            <div class="bike-detail">{{ bike.bikeTypology?.name }}</div>
+            <div class="bike-detail light">{{ bike.bikeSize?.name }}</div>
+            <div class="bike-status" [class.available]="bike.available">
+              <span class="status-dot"></span>
+              {{ bike.available ? 'Disponibile' : 'Occupata' }}
+            </div>
+            <div class="selected-count" *ngIf="selectedBikes.includes(bike.id)">
+              {{ selectedBikes.indexOf(bike.id) + 1 }}
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="actions">
-        <button type="submit" [disabled]="submitting">
-          {{ submitting ? 'Salvataggio...' : 'Conferma prenotazione' }}
+      <!-- Step 3: Extra -->
+      <div class="form-step">
+        <div class="step-header">
+          <span class="step-number">3</span>
+          <div class="step-info">
+            <h2 class="step-title">Extra</h2>
+            <p class="step-desc">Aggiungi accessori e scegli la copertura assicurativa</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-tools"></i>
+              Accessori
+            </label>
+            <div class="input-wrapper">
+              <select multiple formControlName="accessories">
+                <option *ngFor="let a of accessories" [value]="a.id">{{ a.name }}</option>
+              </select>
+            </div>
+            <span class="field-hint">Tieni premuto Ctrl per selezionare più accessori</span>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label">
+              <i class="bi bi-shield-check"></i>
+              Assicurazione
+            </label>
+            <div class="input-wrapper">
+              <select formControlName="insuranceCoverage">
+                <option value="">Nessuna copertura</option>
+                <option *ngFor="let i of insuranceCoverages" [value]="i.id">{{ i.name }}</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-footer">
+        <div class="footer-info">
+          <i class="bi bi-info-circle"></i>
+          <span>I campi contrassegnati con * sono obbligatori</span>
+        </div>
+        <button type="submit" class="btn-submit" [disabled]="submitting">
+          <i class="bi bi-check2-circle"></i>
+          <span *ngIf="!submitting">Conferma prenotazione</span>
+          <span *ngIf="submitting">
+            <span class="btn-spinner"></span>
+            Salvataggio in corso...
+          </span>
         </button>
       </div>
 

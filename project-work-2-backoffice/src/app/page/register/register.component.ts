@@ -38,24 +38,23 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.destroyed$.complete();
   }
 
-  register() {
-  const formValue = this.registerForm.value;
+   register() {
+   const formValue = this.registerForm.value;
 
-
-  this.authSrv.register({
-    firstName: formValue.firstName || '',
-    lastName: formValue.lastName || '',
-    username: formValue.username || '',
-    password: formValue.password || ''
-  })
-  .pipe(
-    catchError(err => {
-      this.registerError = err.error.message || 'Registration failed';
-      return throwError(() => err);
-    })
-  )
-  .subscribe(() => {
-    this.router.navigate(['/login']);
-  });
-}
+   this.authSrv.register({
+     firstName: formValue.firstName || '',
+     lastName: formValue.lastName || '',
+     username: formValue.username || '',
+     password: formValue.password || ''
+   })
+   .pipe(
+     catchError(err => {
+       this.registerError = err.error.message || 'Registration failed';
+       return throwError(() => err);
+     })
+   )
+   .subscribe(() => {
+     this.router.navigate(['/verification-sent']);
+   });
+ }
 }

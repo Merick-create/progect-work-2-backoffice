@@ -1,0 +1,15 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-verification-success',
+  templateUrl: './verification-success.component.html',
+  styleUrls: ['./verification-success.component.css']
+})
+export class VerificationSuccessComponent {
+  constructor(private router: Router) {}
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+}

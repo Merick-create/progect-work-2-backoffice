@@ -7,6 +7,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { MyReservationsComponent } from './page/my-reservations/my-reservations.component';
+import { VerificationSentComponent } from './page/verification-sent/verification-sent.component';
+import { VerifyEmailComponent } from './page/verify-email/verify-email.component';
+import { VerificationSuccessComponent } from './page/verification-success/verification-success.component';
 import { authGuard } from './utils/auth.guard';
 
 const routes: Routes = [
@@ -25,6 +28,18 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'verification-sent',
+    component: VerificationSentComponent
+  },
+  {
+    path: 'verify-email',
+    component: VerifyEmailComponent
+  },
+  {
+    path: 'verification-success',
+    component: VerificationSuccessComponent
   },
   {
     path: 'reservation',

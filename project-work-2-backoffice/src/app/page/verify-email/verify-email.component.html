@@ -1,0 +1,12 @@
+<div class="verify-email-container">
+  <div class="verify-card">
+    <h2 *ngIf="loading">Verifica in corso...</h2>
+    <h2 *ngIf="success">Account verificato!</h2>
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    <div *ngIf="loading" class="spinner-container">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>

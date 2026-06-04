@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: ''                 // opzionale: fallback alla home
+    redirectTo: ''                 
   },
   {
   path: 'profilo',

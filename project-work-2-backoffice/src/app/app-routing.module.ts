@@ -6,6 +6,7 @@ import { HomeComponent } from './page/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { authGuard } from './utils/auth.guard';
 
 const routes: Routes = [
   {
@@ -26,6 +27,7 @@ const routes: Routes = [
   },
   {
     path: 'reservation',
+    canActivate:[authGuard],
     component: ReservationComponent
   },
   {
@@ -38,6 +40,7 @@ const routes: Routes = [
   },
   {
   path: 'profilo',
+  canActivate:[authGuard],
   component: ProfileComponent
   }
 ];

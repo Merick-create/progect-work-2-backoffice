@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ReservationService } from '../../service/reservation.service';
 import { Reservation } from '../../service/reservation.entity';
+import { switchMap } from 'rxjs/internal/operators/switchMap';
+import { BehaviorSubject, catchError, of } from 'rxjs';
+
 
 @Component({
   selector: 'app-my-reservations',
@@ -11,6 +14,7 @@ import { Reservation } from '../../service/reservation.entity';
 export class MyReservationsComponent implements OnInit {
   reservations: Reservation[] = [];
   loading = true;
+  refresh$ = new BehaviorSubject<void>(undefined);
 
   constructor(private reservationService: ReservationService) {}
 
@@ -18,26 +22,46 @@ export class MyReservationsComponent implements OnInit {
     this.loadReservations();
   }
 
-  get currentReservation(): Reservation | null {
-    const active = this.reservations.filter(r => r.status === 'active' || r.status === 'confirmed');
-    return active.length > 0 ? active[0] : null;
-  }
+  reservation$ = this.refresh$.pipe(
+      switchMap(() =>
+        this.reservationService.list().pipe(
+          catchError(err => { console.error(err); return of([]); })
+        )
+      )
+    );
 
-  get upcomingReservations(): Reservation[] {
-    return this.reservations.filter(r => r.status === 'pending' || r.status === 'confirmed')
-      .filter(r => !this.currentReservation || r.id !== this.currentReservation.id);
-  }
+    get inRentalReservations(): Reservation[] {
+      return this.reservations.filter(r => r.status === 'in_rental');
+    }
 
-  get pastReservations(): Reservation[] {
-    return this.reservations.filter(r => r.status === 'completed' || r.status === 'cancelled' || r.status === 'archived');
-  }
+    get currentReservations(): Reservation[] {
+      return this.reservations.filter(r => r.status === 'pending');
+    }
+
+    get completedReservations(): Reservation[] {
+      return this.reservations.filter(r => r.status === 'completed');
+    }
+
+    get cancelledReservations(): Reservation[] {
+      return this.reservations.filter(r => r.status === 'cancelled');
+    }
+
 
   loadReservations() {
     this.loading = true;
-    this.reservationService.list().subscribe({
-      next: (res) => { this.reservations = res; this.loading = false; },
-      error: () => this.loading = false
-    });
+
+  this.reservationService.list().subscribe({
+    next: (res) => {
+      console.log('RAW RES:', res);
+
+      this.reservations = [...res];
+
+      console.log('IN RENTAL:', this.inRentalReservations);
+
+      this.loading = false;
+    },
+    error: () => this.loading = false
+  });
   }
 
   cancelReservation(id: string) {

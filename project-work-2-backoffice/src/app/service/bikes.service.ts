@@ -11,7 +11,7 @@ export class BikeService {
 
   getAvailable(locationId: string) {
     return this.http.get<Bike[]>(
-      `/api/bikes?location=${locationId}`
+      `/api/bikes?location=${locationId}&available=true`
     );
   }
 }

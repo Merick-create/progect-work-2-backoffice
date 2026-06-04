@@ -5,173 +5,278 @@
         <i class="bi bi-bicycle"></i>
       </div>
       <h1 class="hero-title">Prenota la tua bici</h1>
-      <p class="hero-subtitle">Scegli data, modello e accessori per la tua prossima pedalata</p>
+      <p class="hero-subtitle">Compila i passaggi per il tuo noleggio</p>
     </div>
   </div>
 
   <div class="container">
     <form [formGroup]="form" (ngSubmit)="submit()" class="reservation-form">
 
-      <!-- Step 1: Dati ritiro -->
-      <div class="form-step">
-        <div class="step-header">
-          <span class="step-number">1</span>
-          <div class="step-info">
-            <h2 class="step-title">Dati ritiro</h2>
-            <p class="step-desc">Seleziona sede e orari per il noleggio</p>
+      <!-- Step Progress -->
+      <div class="step-progress">
+        <div class="step-indicator" *ngFor="let s of steps; let i = index; let last = last"
+          [class.active]="i === currentStep"
+          [class.completed]="i < currentStep"
+          (click)="goToStep(i)">
+          <div class="step-dot">
+            <i class="bi" [ngClass]="i < currentStep ? 'bi-check-lg' : s.icon"></i>
           </div>
+          <span class="step-label">{{ s.label }}</span>
         </div>
+      </div>
 
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-geo-alt"></i>
-              Sede di ritiro
-            </label>
-            <div class="input-wrapper">
-              <select formControlName="pickupLocation">
-                <option value="">Seleziona sede</option>
-                <option *ngFor="let l of locations" [value]="l.id">{{ l.name }}</option>
-              </select>
-              <i class="bi bi-chevron-down select-arrow"></i>
-            </div>
-          </div>
+      <!-- Step 1: Sede -->
+      <div class="step-content" *ngIf="currentStep === 0">
+        <h2 class="step-heading">Dove vuoi ritirare la bici?</h2>
+        <p class="step-sub">Seleziona la sede di ritiro più comoda per te</p>
 
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-calendar"></i>
-              Data ritiro
-            </label>
-            <div class="input-wrapper">
-              <input type="date" formControlName="pickupDate">
-            </div>
-          </div>
-
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-clock"></i>
-              Orario
-            </label>
-            <div class="input-wrapper">
-              <select formControlName="pickupTime">
-                <option value="">Seleziona orario</option>
-                <option *ngFor="let s of pickupSlots" [value]="s">{{ s }}</option>
-              </select>
-              <i class="bi bi-chevron-down select-arrow"></i>
-            </div>
-          </div>
-
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-calendar-check"></i>
-              Restituzione
-            </label>
-            <div class="input-wrapper">
-              <input type="datetime-local" formControlName="returnDateTime">
-            </div>
+        <div class="card-grid">
+          <div class="sel-card"
+            *ngFor="let l of locations"
+            [class.selected]="form.value.pickupLocation === l.id"
+            (click)="form.patchValue({ pickupLocation: l.id })">
+            <div class="sel-card-icon"><i class="bi bi-geo-alt"></i></div>
+            <div class="sel-card-name">{{ l.name }}</div>
+            <div class="sel-card-check" *ngIf="form.value.pickupLocation === l.id"><i class="bi bi-check-circle-fill"></i></div>
           </div>
         </div>
       </div>
 
-      <!-- Step 2: Scegli bici -->
-      <div class="form-step">
-        <div class="step-header">
-          <span class="step-number">2</span>
-          <div class="step-info">
-            <h2 class="step-title">Scegli le bici</h2>
-            <p class="step-desc">Seleziona una o più bici tra quelle disponibili</p>
-          </div>
-        </div>
+      <!-- Step 2: Bici -->
+      <div class="step-content" *ngIf="currentStep === 1">
+        <h2 class="step-heading">Scegli le tue bici</h2>
+        <p class="step-sub">Seleziona una o più bici disponibili in questa sede</p>
 
         <div class="loading-state" *ngIf="loading">
           <div class="spinner"></div>
           <span>Caricamento bici disponibili...</span>
         </div>
 
-        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0 && form.value.pickupLocation">
+        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0">
           <i class="bi bi-emoji-frown"></i>
-          <p>Nessuna bici disponibile per questa sede.<br>Prova a cambiare sede o data.</p>
+          <p>Nessuna bici disponibile per questa sede.</p>
         </div>
 
         <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
           <div class="bike-card" *ngFor="let bike of availableBikes"
             [class.selected]="selectedBikes.includes(bike.id)"
             (click)="toggleBike(bike.id)">
-            <div class="bike-card-bg"></div>
-            <div class="bike-select-indicator">
-              <i class="bi bi-check-lg"></i>
-            </div>
-            <div class="bike-icon">
-              <i class="bi bi-bicycle"></i>
-            </div>
+            <div class="bike-icon"><i class="bi bi-bicycle"></i></div>
             <div class="bike-code">{{ bike.code }}</div>
             <div class="bike-detail">{{ bike.bikeTypology?.name }}</div>
             <div class="bike-detail light">{{ bike.bikeSize?.name }}</div>
-            <div class="bike-status" [class.available]="bike.available">
-              <span class="status-dot"></span>
-              {{ bike.available ? 'Disponibile' : 'Occupata' }}
-            </div>
-            <div class="selected-count" *ngIf="selectedBikes.includes(bike.id)">
-              {{ selectedBikes.indexOf(bike.id) + 1 }}
-            </div>
           </div>
         </div>
       </div>
 
       <!-- Step 3: Extra -->
-      <div class="form-step">
-        <div class="step-header">
-          <span class="step-number">3</span>
-          <div class="step-info">
-            <h2 class="step-title">Extra</h2>
-            <p class="step-desc">Aggiungi accessori e scegli la copertura assicurativa</p>
+      <div class="step-content" *ngIf="currentStep === 2">
+        <h2 class="step-heading">Aggiungi extra</h2>
+        <p class="step-sub">Accessori e assicurazione per la tua pedalata</p>
+
+        <div class="extra-block">
+          <h3 class="extra-label"><i class="bi bi-tools"></i> Accessori</h3>
+          <div class="card-grid">
+            <div class="sel-card" *ngFor="let a of accessories"
+              [class.selected]="selectedAccessories.includes(a.id)"
+              (click)="toggleAccessory(a.id)">
+              <div class="sel-card-icon"><i class="bi bi-tools"></i></div>
+              <div class="sel-card-name">{{ a.name }}</div>
+              <div class="sel-card-check" *ngIf="selectedAccessories.includes(a.id)"><i class="bi bi-check-circle-fill"></i></div>
+            </div>
           </div>
         </div>
 
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-tools"></i>
-              Accessori
-            </label>
-            <div class="input-wrapper">
-              <select multiple formControlName="accessories">
-                <option *ngFor="let a of accessories" [value]="a.id">{{ a.name }}</option>
-              </select>
+        <div class="extra-block">
+          <h3 class="extra-label"><i class="bi bi-shield-check"></i> Assicurazione</h3>
+          <div class="card-grid">
+            <div class="sel-card"
+              [class.selected]="!form.value.insuranceCoverage"
+              (click)="form.patchValue({ insuranceCoverage: '' })">
+              <div class="sel-card-icon"><i class="bi bi-shield-slash"></i></div>
+              <div class="sel-card-name">Nessuna copertura</div>
+              <div class="sel-card-check" *ngIf="!form.value.insuranceCoverage"><i class="bi bi-check-circle-fill"></i></div>
             </div>
-            <span class="field-hint">Tieni premuto Ctrl per selezionare più accessori</span>
-          </div>
-
-          <div class="form-field">
-            <label class="field-label">
-              <i class="bi bi-shield-check"></i>
-              Assicurazione
-            </label>
-            <div class="input-wrapper">
-              <select formControlName="insuranceCoverage">
-                <option value="">Nessuna copertura</option>
-                <option *ngFor="let i of insuranceCoverages" [value]="i.id">{{ i.name }}</option>
-              </select>
-              <i class="bi bi-chevron-down select-arrow"></i>
+            <div class="sel-card" *ngFor="let i of insuranceCoverages"
+              [class.selected]="form.value.insuranceCoverage === i.id"
+              (click)="form.patchValue({ insuranceCoverage: i.id })">
+              <div class="sel-card-icon"><i class="bi bi-shield-fill-check"></i></div>
+              <div class="sel-card-name">{{ i.name }}</div>
+              <div class="sel-card-check" *ngIf="form.value.insuranceCoverage === i.id"><i class="bi bi-check-circle-fill"></i></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Submit -->
-      <div class="form-footer">
-        <div class="footer-info">
-          <i class="bi bi-info-circle"></i>
-          <span>I campi contrassegnati con * sono obbligatori</span>
+      <!-- Step 4: Data e Ora -->
+      <div class="step-content" *ngIf="currentStep === 3">
+        <div class="datetime-layout">
+
+          <!-- Calendar -->
+          <div class="cal-col">
+            <div class="cal-card">
+              <div class="cal-header">
+                <span class="cal-month">{{ monthNames[calendarMonth] }} {{ calendarYear }}</span>
+                <div class="cal-nav">
+                  <button type="button" class="cal-nav-btn" (click)="prevMonth()"><i class="bi bi-chevron-left"></i></button>
+                  <button type="button" class="cal-nav-btn" (click)="nextMonth()"><i class="bi bi-chevron-right"></i></button>
+                </div>
+              </div>
+
+              <div class="cal-weekdays">
+                <span *ngFor="let d of weekDays">{{ d }}</span>
+              </div>
+
+              <div class="cal-grid">
+                <div class="cal-row" *ngFor="let week of calendarDays">
+                  <button type="button" class="cal-cell"
+                    *ngFor="let day of week"
+                    [class.empty]="day === null"
+                    [class.selected]="day !== null && form.value.pickupDate === fmtDate(day)"
+                    [class.today]="isToday(day!)"
+                    [class.past]="isPastDay(day!)"
+                    [disabled]="day === null || isPastDay(day!)"
+                    (click)="day && selectDay(day)">
+                    {{ day || '' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Slots -->
+          <div class="slots-col">
+            <div class="slots-header">
+              <span class="slots-selected" *ngIf="!selectedDateStr">Seleziona un giorno</span>
+              <span class="slots-selected" *ngIf="selectedDateStr">{{ selectedDateStr }}</span>
+              <span class="slots-time" *ngIf="selectedTimeStr">{{ selectedTimeStr }}</span>
+            </div>
+
+            <div class="slots-groups" *ngIf="selectedDateStr">
+              <div class="slot-group" *ngFor="let g of timeGroups">
+                <div class="slot-group-head">
+                  <div class="slot-group-icon"><i class="bi" [ngClass]="g.icon"></i></div>
+                  <div class="slot-group-info">
+                    <span class="slot-group-label">{{ g.label }}</span>
+                    <span class="slot-group-sub">{{ g.subtitle }}</span>
+                  </div>
+                </div>
+                <div class="slot-grid">
+                  <button type="button" class="slot-chip"
+                    *ngFor="let s of g.slots"
+                    [class.selected]="selectedTimeStr === s"
+                    (click)="selectTime(s)">
+                    {{ s }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="slots-empty" *ngIf="!selectedDateStr">
+              <i class="bi bi-calendar3"></i>
+              <p>Scegli un giorno dal calendario<br>per vedere gli orari disponibili</p>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn-submit" [disabled]="submitting">
-          <i class="bi bi-check2-circle"></i>
-          <span *ngIf="!submitting">Conferma prenotazione</span>
-          <span *ngIf="submitting">
-            <span class="btn-spinner"></span>
-            Salvataggio in corso...
-          </span>
+
+        <!-- Return date -->
+        <div class="return-section">
+          <div class="return-header">
+            <i class="bi bi-arrow-return-right"></i>
+            <span>Data e ora di restituzione</span>
+          </div>
+
+          <div class="datetime-layout">
+            <!-- Calendar -->
+            <div class="cal-col">
+              <div class="cal-card">
+                <div class="cal-header">
+                  <span class="cal-month">{{ monthNames[returnCalendarMonth] }} {{ returnCalendarYear }}</span>
+                  <div class="cal-nav">
+                    <button type="button" class="cal-nav-btn" (click)="prevReturnMonth()"><i class="bi bi-chevron-left"></i></button>
+                    <button type="button" class="cal-nav-btn" (click)="nextReturnMonth()"><i class="bi bi-chevron-right"></i></button>
+                  </div>
+                </div>
+
+                <div class="cal-weekdays">
+                  <span *ngFor="let d of weekDays">{{ d }}</span>
+                </div>
+
+                <div class="cal-grid">
+                  <div class="cal-row" *ngFor="let week of returnCalendarDays">
+                    <button type="button" class="cal-cell"
+                      *ngFor="let day of week"
+                      [class.empty]="day === null"
+                      [class.selected]="day !== null && form.value.returnDate === fmtReturnDate(day)"
+                      [class.today]="isReturnToday(day!)"
+                      [class.past]="isReturnPastDay(day!)"
+                      [disabled]="day === null || isReturnPastDay(day!)"
+                      (click)="day && selectReturnDay(day)">
+                      {{ day || '' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="slots-col">
+              <div class="slots-header">
+                <span class="slots-selected" *ngIf="!returnSelectedDateStr">Seleziona un giorno</span>
+                <span class="slots-selected" *ngIf="returnSelectedDateStr">{{ returnSelectedDateStr }}</span>
+                <span class="slots-time" *ngIf="returnSelectedTimeStr">{{ returnSelectedTimeStr }}</span>
+              </div>
+
+              <div class="slots-groups" *ngIf="returnSelectedDateStr">
+                <div class="slot-group" *ngFor="let g of timeGroups">
+                  <div class="slot-group-head">
+                    <div class="slot-group-icon"><i class="bi" [ngClass]="g.icon"></i></div>
+                    <div class="slot-group-info">
+                      <span class="slot-group-label">{{ g.label }}</span>
+                      <span class="slot-group-sub">{{ g.subtitle }}</span>
+                    </div>
+                  </div>
+                  <div class="slot-grid">
+                    <button type="button" class="slot-chip"
+                      *ngFor="let s of g.slots"
+                      [class.selected]="returnSelectedTimeStr === s"
+                      (click)="selectReturnTime(s)">
+                      {{ s }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slots-empty" *ngIf="!returnSelectedDateStr">
+                <i class="bi bi-calendar3"></i>
+                <p>Scegli un giorno dal calendario<br>per vedere gli orari disponibili</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="step-nav">
+        <button type="button" class="btn-back" (click)="prevStep()" *ngIf="currentStep > 0">
+          <i class="bi bi-arrow-left"></i>
+          Indietro
         </button>
+
+        <div class="nav-right">
+          <button type="button" class="btn-next" (click)="nextStep()"
+            *ngIf="currentStep < steps.length - 1" [disabled]="!canGoNext()">
+            Avanti
+            <i class="bi bi-arrow-right"></i>
+          </button>
+
+          <button type="submit" class="btn-submit"
+            *ngIf="currentStep === steps.length - 1" [disabled]="submitting">
+            <i class="bi bi-check2-circle"></i>
+            <span *ngIf="!submitting">Conferma prenotazione</span>
+            <span *ngIf="submitting">Salvataggio...</span>
+          </button>
+        </div>
       </div>
 
     </form>

@@ -27,6 +27,15 @@ export class ReservationComponent {
   loading = false;
   submitting = false;
 
+  currentStep = 0;
+
+  steps = [
+    { label: 'Sede', icon: 'bi-geo-alt' },
+    { label: 'Bici', icon: 'bi-bicycle' },
+    { label: 'Extra', icon: 'bi-tools' },
+    { label: 'Data', icon: 'bi-calendar-check' }
+  ];
+
   pickupSlots = [
     '09:00','10:00','11:00','12:00','13:00',
     '14:00','15:00','16:00','17:00','18:00'
@@ -37,6 +46,29 @@ export class ReservationComponent {
   accessories: any[] = [];
   insuranceCoverages: any[] = [];
   selectedBikes: string[] = [];
+  selectedAccessories: string[] = [];
+
+  /* Calendar */
+  calendarMonth = 0;
+  calendarYear = 0;
+  calendarDays: (number | null)[][] = [];
+  selectedDateStr = '';
+  selectedTimeStr = '';
+
+  returnCalendarMonth = 0;
+  returnCalendarYear = 0;
+  returnCalendarDays: (number | null)[][] = [];
+  returnSelectedDateStr = '';
+  returnSelectedTimeStr = '';
+
+  weekDays = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  monthNames = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+
+  timeGroups = [
+    { label: 'Mattina', icon: 'bi-sunrise', subtitle: '09:00 - 12:00', slots: ['09:00','10:00','11:00','12:00'] },
+    { label: 'Pomeriggio', icon: 'bi-sun', subtitle: '13:00 - 16:00', slots: ['13:00','14:00','15:00','16:00'] },
+    { label: 'Sera', icon: 'bi-moon', subtitle: '17:00 - 18:00', slots: ['17:00','18:00'] },
+  ];
 
   locations$ = this.refresh$.pipe(
     switchMap(() =>
@@ -63,9 +95,18 @@ export class ReservationComponent {
   );
 
   ngOnInit(): void {
+    const now = new Date();
+    this.calendarMonth = now.getMonth();
+    this.calendarYear = now.getFullYear();
+    this.buildCalendar();
+
+    this.returnCalendarMonth = now.getMonth();
+    this.returnCalendarYear = now.getFullYear();
+    this.buildReturnCalendar();
+
     this.initForm();
     this.loadData();
-    this.listenChanges();
+    this.watchLocation();
   }
 
   initForm(): void {
@@ -73,7 +114,8 @@ export class ReservationComponent {
       pickupDate: ['', Validators.required],
       pickupTime: ['', Validators.required],
       pickupLocation: ['', Validators.required],
-      returnDateTime: ['', Validators.required],
+      returnDate: ['', Validators.required],
+      returnTime: ['', Validators.required],
       bikes: [[], Validators.required],
       accessories: [[]],
       insuranceCoverage: ['']
@@ -86,11 +128,9 @@ export class ReservationComponent {
     this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
   }
 
-  listenChanges(): void {
-    this.form.valueChanges.subscribe(v => {
-      if (v.pickupLocation && v.pickupDate && v.pickupTime) {
-        this.loadAvailableBikes(v.pickupLocation);
-      }
+  watchLocation(): void {
+    this.form.get('pickupLocation')?.valueChanges.subscribe(locId => {
+      if (locId) this.loadAvailableBikes(locId);
     });
   }
 
@@ -117,6 +157,178 @@ export class ReservationComponent {
     this.form.patchValue({ bikes: this.selectedBikes }, { emitEvent: false });
   }
 
+  toggleAccessory(id: string): void {
+    const idx = this.selectedAccessories.indexOf(id);
+    if (idx >= 0) {
+      this.selectedAccessories.splice(idx, 1);
+    } else {
+      this.selectedAccessories.push(id);
+    }
+    this.form.patchValue({ accessories: [...this.selectedAccessories] }, { emitEvent: false });
+  }
+
+  /* Calendar */
+  buildCalendar(): void {
+    const firstDay = new Date(this.calendarYear, this.calendarMonth, 1);
+    const daysInMonth = new Date(this.calendarYear, this.calendarMonth + 1, 0).getDate();
+    const startDow = firstDay.getDay();
+    const startOffset = startDow === 0 ? 6 : startDow - 1;
+
+    const weeks: (number | null)[][] = [];
+    let week: (number | null)[] = [];
+
+    for (let i = 0; i < startOffset; i++) week.push(null);
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      week.push(d);
+      if (week.length === 7) { weeks.push(week); week = []; }
+    }
+
+    if (week.length > 0) {
+      while (week.length < 7) week.push(null);
+      weeks.push(week);
+    }
+
+    this.calendarDays = weeks;
+  }
+
+  prevMonth(): void {
+    if (this.calendarMonth === 0) {
+      this.calendarMonth = 11;
+      this.calendarYear--;
+    } else {
+      this.calendarMonth--;
+    }
+    this.buildCalendar();
+  }
+
+  nextMonth(): void {
+    if (this.calendarMonth === 11) {
+      this.calendarMonth = 0;
+      this.calendarYear++;
+    } else {
+      this.calendarMonth++;
+    }
+    this.buildCalendar();
+  }
+
+  selectDay(day: number): void {
+    const iso = `${this.calendarYear}-${String(this.calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    this.form.patchValue({ pickupDate: iso });
+    this.selectedDateStr = `${day} ${this.monthNames[this.calendarMonth]} ${this.calendarYear}`;
+  }
+
+  isToday(day: number): boolean {
+    const now = new Date();
+    return day === now.getDate() && this.calendarMonth === now.getMonth() && this.calendarYear === now.getFullYear();
+  }
+
+  pad(n: number): string { return String(n).padStart(2, '0'); }
+
+  fmtDate(day: number): string {
+    return `${this.calendarYear}-${this.pad(this.calendarMonth + 1)}-${this.pad(day)}`;
+  }
+
+  /* Return Calendar */
+  buildReturnCalendar(): void {
+    const firstDay = new Date(this.returnCalendarYear, this.returnCalendarMonth, 1);
+    const daysInMonth = new Date(this.returnCalendarYear, this.returnCalendarMonth + 1, 0).getDate();
+    const startDow = firstDay.getDay();
+    const startOffset = startDow === 0 ? 6 : startDow - 1;
+    const weeks: (number | null)[][] = [];
+    let week: (number | null)[] = [];
+    for (let i = 0; i < startOffset; i++) week.push(null);
+    for (let d = 1; d <= daysInMonth; d++) {
+      week.push(d);
+      if (week.length === 7) { weeks.push(week); week = []; }
+    }
+    if (week.length > 0) {
+      while (week.length < 7) week.push(null);
+      weeks.push(week);
+    }
+    this.returnCalendarDays = weeks;
+  }
+
+  prevReturnMonth(): void {
+    if (this.returnCalendarMonth === 0) {
+      this.returnCalendarMonth = 11;
+      this.returnCalendarYear--;
+    } else {
+      this.returnCalendarMonth--;
+    }
+    this.buildReturnCalendar();
+  }
+
+  nextReturnMonth(): void {
+    if (this.returnCalendarMonth === 11) {
+      this.returnCalendarMonth = 0;
+      this.returnCalendarYear++;
+    } else {
+      this.returnCalendarMonth++;
+    }
+    this.buildReturnCalendar();
+  }
+
+  selectReturnDay(day: number): void {
+    const iso = `${this.returnCalendarYear}-${String(this.returnCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    this.form.patchValue({ returnDate: iso });
+    this.returnSelectedDateStr = `${day} ${this.monthNames[this.returnCalendarMonth]} ${this.returnCalendarYear}`;
+  }
+
+  isReturnToday(day: number): boolean {
+    const now = new Date();
+    return day === now.getDate() && this.returnCalendarMonth === now.getMonth() && this.returnCalendarYear === now.getFullYear();
+  }
+
+  fmtReturnDate(day: number): string {
+    return `${this.returnCalendarYear}-${this.pad(this.returnCalendarMonth + 1)}-${this.pad(day)}`;
+  }
+
+  isReturnPastDay(day: number): boolean {
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const d = new Date(this.returnCalendarYear, this.returnCalendarMonth, day);
+    return d < now;
+  }
+
+  selectReturnTime(slot: string): void {
+    this.returnSelectedTimeStr = slot;
+    this.form.patchValue({ returnTime: slot });
+  }
+
+  isPastDay(day: number): boolean {
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const d = new Date(this.calendarYear, this.calendarMonth, day);
+    return d < now;
+  }
+
+  selectTime(slot: string): void {
+    this.selectedTimeStr = slot;
+    this.form.patchValue({ pickupTime: slot });
+  }
+
+  nextStep(): void {
+    if (this.currentStep === 0 && !this.form.value.pickupLocation) return;
+    if (this.currentStep === 1 && this.selectedBikes.length === 0) return;
+    if (this.currentStep < this.steps.length - 1) this.currentStep++;
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 0) this.currentStep--;
+  }
+
+  goToStep(i: number): void {
+    if (i < this.currentStep) this.currentStep = i;
+  }
+
+  canGoNext(): boolean {
+    if (this.currentStep === 0) return !!this.form.value.pickupLocation;
+    if (this.currentStep === 1) return this.selectedBikes.length > 0;
+    if (this.currentStep === 2) return true;
+    return !!this.form.value.pickupDate && !!this.form.value.pickupTime && !!this.form.value.returnDate && !!this.form.value.returnTime;
+  }
+
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -129,7 +341,7 @@ export class ReservationComponent {
       pickupDate: new Date(this.form.value.pickupDate),
       pickupTime: this.form.value.pickupTime,
       pickupLocation: this.form.value.pickupLocation,
-      returnDateTime: new Date(this.form.value.returnDateTime),
+      returnDateTime: new Date(`${this.form.value.returnDate}T${this.form.value.returnTime}`),
       bikes: this.selectedBikes,
       accessories: this.form.value.accessories,
       insuranceCoverage: this.form.value.insuranceCoverage
@@ -139,7 +351,13 @@ export class ReservationComponent {
       next: () => {
         this.form.reset();
         this.selectedBikes = [];
+        this.selectedAccessories = [];
         this.availableBikes = [];
+        this.selectedDateStr = '';
+        this.selectedTimeStr = '';
+        this.returnSelectedDateStr = '';
+        this.returnSelectedTimeStr = '';
+        this.currentStep = 0;
         this.refresh$.next();
         this.submitting = false;
       },

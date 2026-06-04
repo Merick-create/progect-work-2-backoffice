@@ -115,9 +115,13 @@ export class AuthService {
   }
 
 
-  register(user: {firstName: string;lastName: string;username: string;password: string;}) {
+   register(user: {firstName: string;lastName: string;username: string;password: string;}) {
   return this.http.post<User>(`/api/register`, user)
 }
+
+  verifyEmail(token: string) {
+    return this.http.post<any>(`/api/verify`, { token });
+  }
 
 
 

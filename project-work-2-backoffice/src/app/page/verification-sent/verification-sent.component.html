@@ -1,10 +1,22 @@
-<div class="verification-sent-container">
-  <div class="verification-card">
+<div class="sent-page">
+  <div class="sent-card">
+    <div class="icon-wrapper">
+      <i class="bi bi-envelope-check"></i>
+    </div>
     <h2>Email di verifica inviata</h2>
-    <p>Ti abbiamo inviato un'email di verifica all'indirizzo fornito durante la registrazione.</p>
-    <p>Controlla la tua posta elettronica e clicca sul link per verificare il tuo account.</p>
-    <button (click)="resendVerification()" class="resend-button">
-      Invia nuovamente l'email
+    <p class="main-text">
+      Ti abbiamo inviato un'email di verifica all'indirizzo fornito durante la registrazione.
+    </p>
+    <p class="sub-text">
+      Controlla la tua casella di posta e clicca sul link per attivare il tuo account.
+      Se non trovi l'email, controlla la cartella spam.
+    </p>
+    <button (click)="resendVerification()" class="resend-btn">
+      <i class="bi bi-arrow-clockwise"></i>
+      Invia nuovamente
     </button>
+    <div class="back-link">
+      <a routerLink="/login">Torna al login</a>
+    </div>
   </div>
 </div>

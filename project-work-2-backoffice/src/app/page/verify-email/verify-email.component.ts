@@ -1,63 +1,45 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-verify-email',
+  standalone: false,
   templateUrl: './verify-email.component.html',
   styleUrls: ['./verify-email.component.css']
 })
 export class VerifyEmailComponent implements OnInit {
-  token: string = '';
-  loading: boolean = false;
-  error: string | null = null;
-  success: boolean = false;
-  
-  private routeSub: Subscription | undefined;
+  state: 'loading' | 'success' | 'error' = 'loading';
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.routeSub = this.route.queryParams.subscribe(params => {
-      this.token = params['token'] || '';
-      if (this.token) {
-        this.verifyEmail();
-      } else {
-        this.error = 'Token non fornito nel link';
-      }
-    });
-  }
+    const token = this.route.snapshot.queryParamMap.get('token');
 
-  ngOnDestroy(): void {
-    this.routeSub?.unsubscribe();
-  }
+    if (!token) {
+      this.state = 'error';
+      this.errorMessage = 'Token di verifica mancante.';
+      return;
+    }
 
-  verifyEmail(): void {
-    this.loading = true;
-    this.error = null;
-    this.success = false;
-
-    // Simulate delay for spinner (4-5 seconds as requested)
+    // Ritardo di 5 secondi per far vedere la rotellina
     setTimeout(() => {
-      this.authService.verifyEmail(this.token).subscribe({
-        next: (response) => {
-          this.loading = false;
-          this.success = true;
-          // Redirect to success page after a brief moment
-          setTimeout(() => {
-            this.router.navigate(['/verification-success']);
-          }, 1500);
+      this.authService.verifyEmail(token).subscribe({
+        next: () => {
+          this.state = 'success';
+          // Dopo 3 secondi reindirizza al login
+          setTimeout(() => this.router.navigate(['/login']), 3000);
         },
         error: (err) => {
-          this.loading = false;
-          this.error = err.error?.message || 'Verifica fallita. Token scaduto o non valido.';
+          this.state = 'error';
+          this.errorMessage = err.error?.message || 'Errore durante la verifica. Il link potrebbe essere scaduto.';
         }
       });
-    }, 4000); // 4 second delay for spinner
+    }, 5000);
   }
 }

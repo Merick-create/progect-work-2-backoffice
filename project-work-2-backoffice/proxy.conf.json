@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://10.0.6.54:3001",
+    "target": "https://project-work-2-ethc.onrender.com",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

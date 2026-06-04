@@ -1,9 +1,18 @@
-<div class="verification-success-container">
+<div class="success-page">
   <div class="success-card">
-    <h2>Account verificato</h2>
-    <p>Il tuo account è stato verificato con successo.</p>
-    <button (click)="goToHome()" class="home-button">
-      Torna alla Home
+    <div class="icon-wrapper">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h2>Account verificato!</h2>
+    <p class="main-text">
+      Il tuo account è stato verificato con successo.
+    </p>
+    <p class="sub-text">
+      Ora puoi accedere a tutte le funzionalità della piattaforma.
+    </p>
+    <button (click)="goToHome()" class="home-btn">
+      <i class="bi bi-box-arrow-in-right"></i>
+      Vai al login
     </button>
   </div>
 </div>

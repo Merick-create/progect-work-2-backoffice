@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-verification-success',
+  standalone: false,
   templateUrl: './verification-success.component.html',
   styleUrls: ['./verification-success.component.css']
 })

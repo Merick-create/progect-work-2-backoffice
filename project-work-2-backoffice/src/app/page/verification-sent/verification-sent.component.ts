@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-verification-sent',
+  standalone: false,
   templateUrl: './verification-sent.component.html',
   styleUrls: ['./verification-sent.component.css']
 })

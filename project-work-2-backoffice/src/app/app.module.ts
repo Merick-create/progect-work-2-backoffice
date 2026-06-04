@@ -14,6 +14,9 @@ import { ReservationComponent } from './page/reservation/reservation.component';
 import { HomeComponent } from '../app/page/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { MyReservationsComponent } from './page/my-reservations/my-reservations.component';
+import { VerificationSentComponent } from './page/verification-sent/verification-sent.component';
+import { VerifyEmailComponent } from './page/verify-email/verify-email.component';
+import { VerificationSuccessComponent } from './page/verification-success/verification-success.component';
 
 
 @NgModule({
@@ -25,7 +28,10 @@ import { MyReservationsComponent } from './page/my-reservations/my-reservations.
     ReservationComponent,
     HomeComponent,
     ProfileComponent,
-    MyReservationsComponent
+    MyReservationsComponent,
+    VerificationSentComponent,
+    VerifyEmailComponent,
+    VerificationSuccessComponent
   ],
   imports: [
     BrowserModule,

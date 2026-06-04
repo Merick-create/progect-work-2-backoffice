@@ -4,7 +4,6 @@
   padding-bottom: 60px;
 }
 
-/* ─── HERO ─── */
 .hero-section {
   position: relative;
   padding: 100px 20px 70px;
@@ -70,7 +69,6 @@
   font-weight: 400;
 }
 
-/* ─── CONTAINER ─── */
 .container {
   max-width: 880px;
   margin: -20px auto 0;
@@ -79,7 +77,6 @@
   z-index: 2;
 }
 
-/* ─── FORM CARD ─── */
 .reservation-form {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(16px);
@@ -90,7 +87,6 @@
   border: 1px solid rgba(255,255,255,0.5);
 }
 
-/* ─── STEP ─── */
 .form-step {
   margin-bottom: 35px;
   padding-bottom: 35px;
@@ -138,7 +134,6 @@
   margin: 0;
 }
 
-/* ─── FORM GRID ─── */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -191,8 +186,6 @@
 .input-wrapper select[multiple] {
   padding-right: 14px;
   min-height: 90px;
-  -webkit-appearance: none;
-  appearance: none;
 }
 
 .input-wrapper input:focus,
@@ -218,7 +211,6 @@
   margin-top: 5px;
 }
 
-/* ─── LOADING ─── */
 .loading-state {
   display: flex;
   align-items: center;
@@ -241,7 +233,6 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── EMPTY BIKES ─── */
 .empty-bikes {
   text-align: center;
   padding: 40px 20px;
@@ -260,7 +251,6 @@
   margin: 0;
 }
 
-/* ─── BIKE GRID ─── */
 .bike-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
@@ -280,16 +270,6 @@
   user-select: none;
 }
 
-.bike-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 14px;
-}
-
 .bike-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 30px rgba(102,126,234,0.15);
@@ -300,10 +280,6 @@
   border-color: #667eea;
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 12px 35px rgba(102,126,234,0.25);
-}
-
-.bike-card.selected::before {
-  opacity: 1;
 }
 
 .bike-card-bg {
@@ -452,7 +428,6 @@
   to { transform: scale(1); }
 }
 
-/* ─── FOOTER ─── */
 .form-footer {
   margin-top: 30px;
   padding-top: 25px;
@@ -533,7 +508,6 @@
   animation: spin 0.6s linear infinite;
 }
 
-/* ─── ANIMATIONS ─── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -544,51 +518,18 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
-  .hero-section {
-    padding: 80px 16px 50px;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
-  .hero-subtitle {
-    font-size: 0.95rem;
-  }
-
-  .hero-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 1.6rem;
-  }
-
-  .reservation-form {
-    padding: 24px 18px 20px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .bike-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-
-  .form-footer {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .btn-submit {
-    width: 100%;
-    justify-content: center;
-  }
+  .hero-section { padding: 80px 16px 50px; }
+  .hero-title { font-size: 1.8rem; }
+  .hero-subtitle { font-size: 0.95rem; }
+  .hero-icon { width: 56px; height: 56px; font-size: 1.6rem; }
+  .reservation-form { padding: 24px 18px 20px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .bike-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .form-footer { flex-direction: column; align-items: stretch; }
+  .btn-submit { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 420px) {
-  .bike-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  .bike-grid { grid-template-columns: 1fr 1fr; }
 }

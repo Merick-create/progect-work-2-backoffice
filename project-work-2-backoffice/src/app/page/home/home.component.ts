@@ -1,7 +1,8 @@
 import { Component, inject, HostListener} from '@angular/core';
-import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, of, switchMap, take } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
 import { JwtService } from '../../service/jwt.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 
@@ -14,6 +15,8 @@ import { JwtService } from '../../service/jwt.service';
 export class HomeComponent {
   protected auth = inject(AuthService);
   protected jwtSrv = inject(JwtService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   get isLoggedIn(): boolean {
     return this.jwtSrv.hasToken() && !!this.jwtSrv.decodeToken();
@@ -46,7 +49,15 @@ export class HomeComponent {
   }
 
   ngOnInit() {
-    // Trigger scroll listener on init
     this.onScroll();
+    this.route.queryParamMap.pipe(take(1)).subscribe(params => {
+      const token = params.get('token');
+      if (token) {
+        this.auth.verifyEmail(token).subscribe({
+          next: () => this.router.navigate(['/verification-success']),
+          error: () => {}
+        });
+      }
+    });
   }
 }

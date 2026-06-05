@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Reservation } from './reservation.entity';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,39 +12,39 @@ export class ReservationService {
     
   add(reservation: any) {
         return this.http.post<Reservation>(
-        `/api/reservations`,
+        `${environment.apiUrl}/api/reservations`,
         reservation
         );
     }
 
   list() {
     return this.http.get<Reservation[]>(
-      `/api/reservations`
+      `${environment.apiUrl}/api/reservations`
     );
   }
 
   get(id: string) {
     return this.http.get<Reservation>(
-      `/api/reservations/${id}`
+      `${environment.apiUrl}/api/reservations/${id}`
     );
   }
 
   delete(id: string) {
     return this.http.delete(
-      `/api/reservations/${id}`
+      `${environment.apiUrl}/api/reservations/${id}`
     );
   }
 
   update(id: string, data: any) {
     return this.http.put(
-      `/api/reservations/${id}`,
+      `${environment.apiUrl}/api/reservations/${id}`,
       data
     );
   }
 
   changeStatus(id: string, status: string) {
     return this.http.put(
-      `/api/reservations/${id}/status`,
+      `${environment.apiUrl}/api/reservations/${id}/status`,
       { status }
     );
   }

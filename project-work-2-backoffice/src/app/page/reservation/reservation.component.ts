@@ -47,6 +47,8 @@ export class ReservationComponent {
   insuranceCoverages: any[] = [];
   selectedBikes: string[] = [];
   selectedAccessories: string[] = [];
+  selectedTypology = '';
+  selectedSize = '';
 
   /* Calendar */
   calendarMonth = 0;
@@ -107,6 +109,7 @@ export class ReservationComponent {
     this.initForm();
     this.loadData();
     this.watchFilters();
+    this.watchPickupDate();
   }
 
   initForm(): void {
@@ -137,8 +140,28 @@ export class ReservationComponent {
     });
   }
 
+  watchPickupDate(): void {
+    this.form.get('pickupDate')?.valueChanges.subscribe(pickup => {
+      const ret = this.form.value.returnDate;
+      const retTime = this.form.value.returnTime;
+      if (ret && pickup && ret < pickup) {
+        this.form.patchValue({ returnDate: '', returnTime: '' });
+        this.returnSelectedDateStr = '';
+        this.returnSelectedTimeStr = '';
+      } else if (ret && retTime && pickup && ret === pickup) {
+        const pickupTime = this.form.value.pickupTime;
+        if (pickupTime && retTime <= pickupTime) {
+          this.form.patchValue({ returnTime: '' });
+          this.returnSelectedTimeStr = '';
+        }
+      }
+    });
+  }
+
   loadAvailableBikes(locationId: string, date: string): void {
     this.loading = true;
+    this.selectedTypology = '';
+    this.selectedSize = '';
     this.bikeService.getAvailable(locationId, date).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
@@ -168,6 +191,36 @@ export class ReservationComponent {
       this.selectedAccessories.push(id);
     }
     this.form.patchValue({ accessories: [...this.selectedAccessories] }, { emitEvent: false });
+  }
+
+  get availableTypologies(): string[] {
+    const names = new Set<string>();
+    for (const b of this.availableBikes) {
+      if (typeof b.bikeTypology === 'object' && b.bikeTypology?.name) names.add(b.bikeTypology.name);
+    }
+    return [...names];
+  }
+
+  get availableSizes(): string[] {
+    const names = new Set<string>();
+    for (const b of this.availableBikes) {
+      if (typeof b.bikeSize === 'object' && b.bikeSize?.name) names.add(b.bikeSize.name);
+    }
+    return [...names];
+  }
+
+  get filteredBikes(): any[] {
+    return this.availableBikes.filter(b => {
+      if (this.selectedTypology) {
+        const tName = typeof b.bikeTypology === 'object' ? b.bikeTypology?.name : '';
+        if (tName !== this.selectedTypology) return false;
+      }
+      if (this.selectedSize) {
+        const sName = typeof b.bikeSize === 'object' ? b.bikeSize?.name : '';
+        if (sName !== this.selectedSize) return false;
+      }
+      return true;
+    });
   }
 
   /* Calendar */
@@ -272,12 +325,6 @@ export class ReservationComponent {
     this.buildReturnCalendar();
   }
 
-  selectReturnDay(day: number): void {
-    const iso = `${this.returnCalendarYear}-${String(this.returnCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    this.form.patchValue({ returnDate: iso });
-    this.returnSelectedDateStr = `${day} ${this.monthNames[this.returnCalendarMonth]} ${this.returnCalendarYear}`;
-  }
-
   isReturnToday(day: number): boolean {
     const now = new Date();
     return day === now.getDate() && this.returnCalendarMonth === now.getMonth() && this.returnCalendarYear === now.getFullYear();
@@ -291,10 +338,37 @@ export class ReservationComponent {
     const now = new Date();
     now.setHours(0,0,0,0);
     const d = new Date(this.returnCalendarYear, this.returnCalendarMonth, day);
-    return d < now;
+    if (d < now) return true;
+    const pickup = this.form?.value?.pickupDate;
+    if (pickup) {
+      const pickupDate = new Date(pickup);
+      pickupDate.setHours(0,0,0,0);
+      if (d < pickupDate) return true;
+    }
+    return false;
+  }
+
+  isReturnSlotBeforePickup(slot: string): boolean {
+    const returnDate = this.form?.value?.returnDate;
+    const pickupDate = this.form?.value?.pickupDate;
+    const pickupTime = this.form?.value?.pickupTime;
+    if (!returnDate || !pickupDate || !pickupTime) return false;
+    if (returnDate === pickupDate) return slot <= pickupTime;
+    return false;
+  }
+
+  selectReturnDay(day: number): void {
+    const iso = `${this.returnCalendarYear}-${String(this.returnCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    this.form.patchValue({ returnDate: iso });
+    this.returnSelectedDateStr = `${day} ${this.monthNames[this.returnCalendarMonth]} ${this.returnCalendarYear}`;
+    if (this.returnSelectedTimeStr && iso === this.form.value.pickupDate && this.returnSelectedTimeStr <= this.form.value.pickupTime) {
+      this.returnSelectedTimeStr = '';
+      this.form.patchValue({ returnTime: '' });
+    }
   }
 
   selectReturnTime(slot: string): void {
+    if (this.isReturnSlotBeforePickup(slot)) return;
     this.returnSelectedTimeStr = slot;
     this.form.patchValue({ returnTime: slot });
   }

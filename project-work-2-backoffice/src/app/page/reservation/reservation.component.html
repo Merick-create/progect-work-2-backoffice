@@ -110,8 +110,7 @@
             </div>
 
             <div class="slots-empty" *ngIf="!selectedDateStr">
-              <i class="bi bi-calendar3"></i>
-              <p>Scegli un giorno dal calendario<br>per vedere gli orari disponibili</p>
+              <span>Scegli un giorno dal calendario per vedere gli orari disponibili</span>
             </div>
           </div>
         </div>
@@ -146,8 +145,8 @@
                       [class.empty]="day === null"
                       [class.selected]="day !== null && form.value.returnDate === fmtReturnDate(day)"
                       [class.today]="isReturnToday(day!)"
-                      [class.past]="isReturnPastDay(day!)"
-                      [disabled]="day === null || isReturnPastDay(day!)"
+                      [class.past]="isReturnPastDay(day!) || (day !== null && form.value.pickupDate && fmtReturnDate(day) < form.value.pickupDate)"
+                      [disabled]="day === null || isReturnPastDay(day!) || (day !== null && form.value.pickupDate && fmtReturnDate(day) < form.value.pickupDate)"
                       (click)="day && selectReturnDay(day)">
                       {{ day || '' }}
                     </button>
@@ -177,6 +176,8 @@
                     <button type="button" class="slot-chip"
                       *ngFor="let s of g.slots"
                       [class.selected]="returnSelectedTimeStr === s"
+                      [class.past]="isReturnSlotBeforePickup(s)"
+                      [disabled]="isReturnSlotBeforePickup(s)"
                       (click)="selectReturnTime(s)">
                       {{ s }}
                     </button>
@@ -185,8 +186,7 @@
               </div>
 
               <div class="slots-empty" *ngIf="!returnSelectedDateStr">
-                <i class="bi bi-calendar3"></i>
-                <p>Scegli un giorno dal calendario<br>per vedere gli orari disponibili</p>
+                <span>Scegli un giorno dal calendario per vedere gli orari disponibili</span>
               </div>
             </div>
           </div>
@@ -203,13 +203,27 @@
           <span>Caricamento bici disponibili...</span>
         </div>
 
-        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0">
+        <div class="empty-bikes" *ngIf="!loading && filteredBikes.length === 0">
           <i class="bi bi-emoji-frown"></i>
-          <p>Nessuna bici disponibile per questa sede.</p>
+          <p *ngIf="availableBikes.length === 0">Nessuna bici disponibile per questa sede.</p>
+          <p *ngIf="availableBikes.length > 0 && filteredBikes.length === 0">Nessuna bici corrisponde ai filtri selezionati.</p>
+        </div>
+
+        <div class="filter-bar" *ngIf="!loading && availableBikes.length > 0">
+          <div class="filter-chips">
+            <span class="filter-label">Tipo:</span>
+            <button type="button" class="filter-chip" [class.active]="selectedTypology === ''" (click)="selectedTypology = ''">Tutte</button>
+            <button type="button" class="filter-chip" *ngFor="let t of availableTypologies" [class.active]="selectedTypology === t" (click)="selectedTypology = t">{{ t }}</button>
+          </div>
+          <div class="filter-chips">
+            <span class="filter-label">Taglia:</span>
+            <button type="button" class="filter-chip" [class.active]="selectedSize === ''" (click)="selectedSize = ''">Tutte</button>
+            <button type="button" class="filter-chip" *ngFor="let s of availableSizes" [class.active]="selectedSize === s" (click)="selectedSize = s">{{ s }}</button>
+          </div>
         </div>
 
         <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
-          <div class="bike-card" *ngFor="let bike of availableBikes"
+          <div class="bike-card" *ngFor="let bike of filteredBikes"
             [class.selected]="selectedBikes.includes(bike.id)"
             (click)="toggleBike(bike.id)">
             <div class="bike-icon"><i class="bi bi-bicycle"></i></div>

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { LocationEntity } from '../../enity/location/location-entity';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class LocationService {
 
   list() {
     return this.http.get<LocationEntity[]>(
-      `/api/locations`
+      `${environment.apiUrl}/api/locations`
     );
   }
 }

@@ -4,6 +4,7 @@ import { BehaviorSubject, catchError, distinctUntilChanged, map, of, ReplaySubje
 import { JwtService } from './jwt.service';
 import { Router } from '@angular/router';
 import { User } from '../../enity/user/user-entity';
+import { environment } from '../../environments/environment';
 
 
 
@@ -56,7 +57,7 @@ export class AuthService {
     if (!refreshToken) return false;
 
     try {
-      const res = await fetch(`/api/refreshToken`, {
+      const res = await fetch(`${environment.apiUrl}/api/refreshToken`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken })
@@ -92,7 +93,7 @@ export class AuthService {
 
 
   login(username: string, password: string) {
-    return this.http.post<any>(`/api/login`, {username, password})
+    return this.http.post<any>(`${environment.apiUrl}/api/login`, {username, password})
       .pipe(
         tap(res => {
           console.log('Login response:', res);
@@ -116,11 +117,11 @@ export class AuthService {
 
 
    register(user: {firstName: string;lastName: string;username: string;password: string;}) {
-  return this.http.post<User>(`/api/register`, user)
+  return this.http.post<User>(`${environment.apiUrl}/api/register`, user)
 }
 
   verifyEmail(token: string) {
-    return this.http.post<any>(`/api/verify`, { token });
+    return this.http.post<any>(`${environment.apiUrl}/api/verify`, { token });
   }
 
 

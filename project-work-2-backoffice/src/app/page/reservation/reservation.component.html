@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <!-- Step 1: Sede -->
+      <!-- Step 0: Sede -->
       <div class="step-content" *ngIf="currentStep === 0">
         <h2 class="step-heading">Dove vuoi ritirare la bici?</h2>
         <p class="step-sub">Seleziona la sede di ritiro più comoda per te</p>
@@ -42,74 +42,11 @@
         </div>
       </div>
 
-      <!-- Step 2: Bici -->
+      <!-- Step 1: Data -->
       <div class="step-content" *ngIf="currentStep === 1">
-        <h2 class="step-heading">Scegli le tue bici</h2>
-        <p class="step-sub">Seleziona una o più bici disponibili in questa sede</p>
+        <h2 class="step-heading">Scegli data e ora</h2>
+        <p class="step-sub">Seleziona il giorno e l'orario di ritiro e restituzione</p>
 
-        <div class="loading-state" *ngIf="loading">
-          <div class="spinner"></div>
-          <span>Caricamento bici disponibili...</span>
-        </div>
-
-        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0">
-          <i class="bi bi-emoji-frown"></i>
-          <p>Nessuna bici disponibile per questa sede.</p>
-        </div>
-
-        <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
-          <div class="bike-card" *ngFor="let bike of availableBikes"
-            [class.selected]="selectedBikes.includes(bike.id)"
-            (click)="toggleBike(bike.id)">
-            <div class="bike-icon"><i class="bi bi-bicycle"></i></div>
-            <div class="bike-code">{{ bike.code }}</div>
-            <div class="bike-detail">{{ bike.bikeTypology?.name }}</div>
-            <div class="bike-detail light">{{ bike.bikeSize?.name }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 3: Extra -->
-      <div class="step-content" *ngIf="currentStep === 2">
-        <h2 class="step-heading">Aggiungi extra</h2>
-        <p class="step-sub">Accessori e assicurazione per la tua pedalata</p>
-
-        <div class="extra-block">
-          <h3 class="extra-label"><i class="bi bi-tools"></i> Accessori</h3>
-          <div class="card-grid">
-            <div class="sel-card" *ngFor="let a of accessories"
-              [class.selected]="selectedAccessories.includes(a.id)"
-              (click)="toggleAccessory(a.id)">
-              <div class="sel-card-icon"><i class="bi bi-tools"></i></div>
-              <div class="sel-card-name">{{ a.name }}</div>
-              <div class="sel-card-check" *ngIf="selectedAccessories.includes(a.id)"><i class="bi bi-check-circle-fill"></i></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="extra-block">
-          <h3 class="extra-label"><i class="bi bi-shield-check"></i> Assicurazione</h3>
-          <div class="card-grid">
-            <div class="sel-card"
-              [class.selected]="!form.value.insuranceCoverage"
-              (click)="form.patchValue({ insuranceCoverage: '' })">
-              <div class="sel-card-icon"><i class="bi bi-shield-slash"></i></div>
-              <div class="sel-card-name">Nessuna copertura</div>
-              <div class="sel-card-check" *ngIf="!form.value.insuranceCoverage"><i class="bi bi-check-circle-fill"></i></div>
-            </div>
-            <div class="sel-card" *ngFor="let i of insuranceCoverages"
-              [class.selected]="form.value.insuranceCoverage === i.id"
-              (click)="form.patchValue({ insuranceCoverage: i.id })">
-              <div class="sel-card-icon"><i class="bi bi-shield-fill-check"></i></div>
-              <div class="sel-card-name">{{ i.name }}</div>
-              <div class="sel-card-check" *ngIf="form.value.insuranceCoverage === i.id"><i class="bi bi-check-circle-fill"></i></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Data e Ora -->
-      <div class="step-content" *ngIf="currentStep === 3">
         <div class="datetime-layout">
 
           <!-- Calendar -->
@@ -251,6 +188,72 @@
                 <i class="bi bi-calendar3"></i>
                 <p>Scegli un giorno dal calendario<br>per vedere gli orari disponibili</p>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Bici -->
+      <div class="step-content" *ngIf="currentStep === 2">
+        <h2 class="step-heading">Scegli le tue bici</h2>
+        <p class="step-sub">Seleziona una o più bici disponibili in questa sede</p>
+
+        <div class="loading-state" *ngIf="loading">
+          <div class="spinner"></div>
+          <span>Caricamento bici disponibili...</span>
+        </div>
+
+        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0">
+          <i class="bi bi-emoji-frown"></i>
+          <p>Nessuna bici disponibile per questa sede.</p>
+        </div>
+
+        <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
+          <div class="bike-card" *ngFor="let bike of availableBikes"
+            [class.selected]="selectedBikes.includes(bike.id)"
+            (click)="toggleBike(bike.id)">
+            <div class="bike-icon"><i class="bi bi-bicycle"></i></div>
+            <div class="bike-code">{{ bike.code }}</div>
+            <div class="bike-detail">{{ bike.bikeTypology?.name }}</div>
+            <div class="bike-detail light">{{ bike.bikeSize?.name }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Extra -->
+      <div class="step-content" *ngIf="currentStep === 3">
+        <h2 class="step-heading">Aggiungi extra</h2>
+        <p class="step-sub">Accessori e assicurazione per la tua pedalata</p>
+
+        <div class="extra-block">
+          <h3 class="extra-label"><i class="bi bi-tools"></i> Accessori</h3>
+          <div class="card-grid">
+            <div class="sel-card" *ngFor="let a of accessories"
+              [class.selected]="selectedAccessories.includes(a.id)"
+              (click)="toggleAccessory(a.id)">
+              <div class="sel-card-icon"><i class="bi bi-tools"></i></div>
+              <div class="sel-card-name">{{ a.name }}</div>
+              <div class="sel-card-check" *ngIf="selectedAccessories.includes(a.id)"><i class="bi bi-check-circle-fill"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="extra-block">
+          <h3 class="extra-label"><i class="bi bi-shield-check"></i> Assicurazione</h3>
+          <div class="card-grid">
+            <div class="sel-card"
+              [class.selected]="!form.value.insuranceCoverage"
+              (click)="form.patchValue({ insuranceCoverage: '' })">
+              <div class="sel-card-icon"><i class="bi bi-shield-slash"></i></div>
+              <div class="sel-card-name">Nessuna copertura</div>
+              <div class="sel-card-check" *ngIf="!form.value.insuranceCoverage"><i class="bi bi-check-circle-fill"></i></div>
+            </div>
+            <div class="sel-card" *ngFor="let i of insuranceCoverages"
+              [class.selected]="form.value.insuranceCoverage === i.id"
+              (click)="form.patchValue({ insuranceCoverage: i.id })">
+              <div class="sel-card-icon"><i class="bi bi-shield-fill-check"></i></div>
+              <div class="sel-card-name">{{ i.name }}</div>
+              <div class="sel-card-check" *ngIf="form.value.insuranceCoverage === i.id"><i class="bi bi-check-circle-fill"></i></div>
             </div>
           </div>
         </div>

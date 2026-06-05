@@ -6,7 +6,7 @@ import { InsuranceCoverageService } from '../../service/coverage.service';
 import { BikeAccessoryService } from '../..//service/bike-accessory.service';
 import { LocationEntity } from '../../../enity/location/location-entity';
 import { LocationService } from '../../service/location.service';
-import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-reservation',
@@ -31,9 +31,9 @@ export class ReservationComponent {
 
   steps = [
     { label: 'Sede', icon: 'bi-geo-alt' },
+    { label: 'Data', icon: 'bi-calendar-check' },
     { label: 'Bici', icon: 'bi-bicycle' },
-    { label: 'Extra', icon: 'bi-tools' },
-    { label: 'Data', icon: 'bi-calendar-check' }
+    { label: 'Extra', icon: 'bi-tools' }
   ];
 
   pickupSlots = [
@@ -106,7 +106,7 @@ export class ReservationComponent {
 
     this.initForm();
     this.loadData();
-    this.watchLocation();
+    this.watchFilters();
   }
 
   initForm(): void {
@@ -128,15 +128,18 @@ export class ReservationComponent {
     this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
   }
 
-  watchLocation(): void {
-    this.form.get('pickupLocation')?.valueChanges.subscribe(locId => {
-      if (locId) this.loadAvailableBikes(locId);
+  watchFilters(): void {
+    combineLatest([
+      this.form.get('pickupLocation')!.valueChanges,
+      this.form.get('pickupDate')!.valueChanges
+    ]).subscribe(([locId, date]) => {
+      if (locId && date) this.loadAvailableBikes(locId, date);
     });
   }
 
-  loadAvailableBikes(locationId: string): void {
+  loadAvailableBikes(locationId: string, date: string): void {
     this.loading = true;
-    this.bikeService.getAvailable(locationId).subscribe({
+    this.bikeService.getAvailable(locationId, date).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
         this.selectedBikes = [];
@@ -310,7 +313,7 @@ export class ReservationComponent {
 
   nextStep(): void {
     if (this.currentStep === 0 && !this.form.value.pickupLocation) return;
-    if (this.currentStep === 1 && this.selectedBikes.length === 0) return;
+    if (this.currentStep === 1 && (!this.form.value.pickupDate || !this.form.value.pickupTime || !this.form.value.returnDate || !this.form.value.returnTime)) return;
     if (this.currentStep < this.steps.length - 1) this.currentStep++;
   }
 
@@ -324,9 +327,10 @@ export class ReservationComponent {
 
   canGoNext(): boolean {
     if (this.currentStep === 0) return !!this.form.value.pickupLocation;
-    if (this.currentStep === 1) return this.selectedBikes.length > 0;
-    if (this.currentStep === 2) return true;
-    return !!this.form.value.pickupDate && !!this.form.value.pickupTime && !!this.form.value.returnDate && !!this.form.value.returnTime;
+    if (this.currentStep === 1) return !!this.form.value.pickupDate && !!this.form.value.pickupTime && !!this.form.value.returnDate && !!this.form.value.returnTime;
+    if (this.currentStep === 2) return this.selectedBikes.length > 0;
+    if (this.currentStep === 3) return true;
+    return false;
   }
 
   submit() {

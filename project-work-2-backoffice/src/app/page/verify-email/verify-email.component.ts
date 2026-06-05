@@ -31,9 +31,7 @@ export class VerifyEmailComponent implements OnInit {
     setTimeout(() => {
       this.authService.verifyEmail(token).subscribe({
         next: () => {
-          this.state = 'success';
-          // Dopo 3 secondi reindirizza al login
-          setTimeout(() => this.router.navigate(['/login']), 3000);
+          this.router.navigate(['/verification-success']);
         },
         error: (err) => {
           this.state = 'error';

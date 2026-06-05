@@ -239,7 +239,6 @@ export class ReservationComponent {
 
   }
 
-  /* Calendar */
   buildCalendar(): void {
     const firstDay = new Date(this.calendarYear, this.calendarMonth, 1);
     const daysInMonth = new Date(this.calendarYear, this.calendarMonth + 1, 0).getDate();
@@ -461,4 +460,3 @@ export class ReservationComponent {
       }
     });
   }
-}

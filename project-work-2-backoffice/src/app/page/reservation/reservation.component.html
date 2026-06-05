@@ -209,13 +209,13 @@
         </div>
 
         <div class="filter-bar" *ngIf="!loading && bikeTypologies.length + bikeSizes.length > 0">
-          <div class="filter-chips">
-            <span class="filter-label">Tipo:</span>
+          <div class="filter-row">
+            <span class="filter-label">Tipo</span>
             <button type="button" class="filter-chip" [class.active]="selectedTypology === ''" (click)="selectTypology('')">Tutte</button>
             <button type="button" class="filter-chip" *ngFor="let t of bikeTypologies" [class.active]="selectedTypology === t.id" (click)="selectTypology(t.id)">{{ t.name }}</button>
           </div>
-          <div class="filter-chips">
-            <span class="filter-label">Taglia:</span>
+          <div class="filter-row">
+            <span class="filter-label">Taglia</span>
             <button type="button" class="filter-chip" [class.active]="selectedSize === ''" (click)="selectSize('')">Tutte</button>
             <button type="button" class="filter-chip" *ngFor="let s of bikeSizes" [class.active]="selectedSize === s.id" (click)="selectSize(s.id)">{{ s.name }}</button>
           </div>

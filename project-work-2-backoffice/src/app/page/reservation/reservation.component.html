@@ -203,27 +203,26 @@
           <span>Caricamento bici disponibili...</span>
         </div>
 
-        <div class="empty-bikes" *ngIf="!loading && filteredBikes.length === 0">
+        <div class="empty-bikes" *ngIf="!loading && availableBikes.length === 0">
           <i class="bi bi-emoji-frown"></i>
-          <p *ngIf="availableBikes.length === 0">Nessuna bici disponibile per questa sede.</p>
-          <p *ngIf="availableBikes.length > 0 && filteredBikes.length === 0">Nessuna bici corrisponde ai filtri selezionati.</p>
+          <p>Nessuna bici disponibile per questa sede e date selezionate.</p>
         </div>
 
-        <div class="filter-bar" *ngIf="!loading && availableBikes.length > 0">
+        <div class="filter-bar" *ngIf="!loading && bikeTypologies.length + bikeSizes.length > 0">
           <div class="filter-chips">
             <span class="filter-label">Tipo:</span>
-            <button type="button" class="filter-chip" [class.active]="selectedTypology === ''" (click)="selectedTypology = ''">Tutte</button>
-            <button type="button" class="filter-chip" *ngFor="let t of availableTypologies" [class.active]="selectedTypology === t" (click)="selectedTypology = t">{{ t }}</button>
+            <button type="button" class="filter-chip" [class.active]="selectedTypology === ''" (click)="selectTypology('')">Tutte</button>
+            <button type="button" class="filter-chip" *ngFor="let t of bikeTypologies" [class.active]="selectedTypology === t.id" (click)="selectTypology(t.id)">{{ t.name }}</button>
           </div>
           <div class="filter-chips">
             <span class="filter-label">Taglia:</span>
-            <button type="button" class="filter-chip" [class.active]="selectedSize === ''" (click)="selectedSize = ''">Tutte</button>
-            <button type="button" class="filter-chip" *ngFor="let s of availableSizes" [class.active]="selectedSize === s" (click)="selectedSize = s">{{ s }}</button>
+            <button type="button" class="filter-chip" [class.active]="selectedSize === ''" (click)="selectSize('')">Tutte</button>
+            <button type="button" class="filter-chip" *ngFor="let s of bikeSizes" [class.active]="selectedSize === s.id" (click)="selectSize(s.id)">{{ s.name }}</button>
           </div>
         </div>
 
         <div class="bike-grid" *ngIf="!loading && availableBikes.length > 0">
-          <div class="bike-card" *ngFor="let bike of filteredBikes"
+          <div class="bike-card" *ngFor="let bike of availableBikes"
             [class.selected]="selectedBikes.includes(bike.id)"
             (click)="toggleBike(bike.id)">
             <div class="bike-icon"><i class="bi bi-bicycle"></i></div>

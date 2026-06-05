@@ -7,6 +7,8 @@ import { BikeAccessoryService } from '../..//service/bike-accessory.service';
 import { LocationEntity } from '../../../enity/location/location-entity';
 import { LocationService } from '../../service/location.service';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
+import { BikeTypologiesService } from '../../service/bike-typologies.service';
+import { BikeSizesService } from '../../service/bike-sizes.service';
 
 @Component({
   selector: 'app-reservation',
@@ -21,6 +23,8 @@ export class ReservationComponent {
   private locationService = inject(LocationService);
   private bikeAccessoryService = inject(BikeAccessoryService);
   private insuranceCoverageService = inject(InsuranceCoverageService);
+  private bikeTypologiesService = inject(BikeTypologiesService);
+  private bikeSizesService = inject(BikeSizesService);
 
   form!: FormGroup;
   refresh$ = new BehaviorSubject<void>(undefined);
@@ -45,6 +49,8 @@ export class ReservationComponent {
   availableBikes: any[] = [];
   accessories: any[] = [];
   insuranceCoverages: any[] = [];
+  bikeTypologies: any[] = [];
+  bikeSizes: any[] = [];
   selectedBikes: string[] = [];
   selectedAccessories: string[] = [];
   selectedTypology = '';
@@ -96,6 +102,22 @@ export class ReservationComponent {
     )
   );
 
+  bikeTypologies$ = this.refresh$.pipe(
+    switchMap(() =>
+      this.bikeTypologiesService.list().pipe(
+        catchError(err => { console.error(err); return of([]); })
+      )
+    )
+  );
+
+  bikeSizes$ = this.refresh$.pipe(
+    switchMap(() =>
+      this.bikeSizesService.list().pipe(
+        catchError(err => { console.error(err); return of([]); })
+      )
+    )
+  );
+
   ngOnInit(): void {
     const now = new Date();
     this.calendarMonth = now.getMonth();
@@ -129,6 +151,8 @@ export class ReservationComponent {
     this.locations$.subscribe(r => this.locations = r);
     this.accessories$.subscribe(r => this.accessories = r);
     this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
+    this.bikeTypologies$.subscribe(r => this.bikeTypologies = r);
+    this.bikeSizes$.subscribe(r => this.bikeSizes = r);
   }
 
   watchFilters(): void {
@@ -137,7 +161,11 @@ export class ReservationComponent {
       this.form.get('pickupDate')!.valueChanges,
       this.form.get('returnDate')!.valueChanges
     ]).subscribe(([locId, pickup, ret]) => {
-      if (locId && pickup && ret) this.loadAvailableBikes(locId, pickup, ret);
+      if (locId && pickup && ret) {
+        this.selectedTypology = '';
+        this.selectedSize = '';
+        this.loadAvailableBikes(locId, pickup, ret);
+      }
     });
   }
 
@@ -161,9 +189,7 @@ export class ReservationComponent {
 
   loadAvailableBikes(locationId: string, startDate: string, endDate: string): void {
     this.loading = true;
-    this.selectedTypology = '';
-    this.selectedSize = '';
-    this.bikeService.getAvailable(locationId, startDate, endDate).subscribe({
+    this.bikeService.getAvailable(locationId, startDate, endDate, this.selectedTypology, this.selectedSize).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
         this.selectedBikes = [];
@@ -172,6 +198,23 @@ export class ReservationComponent {
       },
       error: () => this.loading = false
     });
+  }
+
+  selectTypology(id: string): void {
+    this.selectedTypology = id;
+    this.reloadBikesWithFilters();
+  }
+
+  selectSize(id: string): void {
+    this.selectedSize = id;
+    this.reloadBikesWithFilters();
+  }
+
+  private reloadBikesWithFilters(): void {
+    const locId = this.form.value.pickupLocation;
+    const start = this.form.value.pickupDate;
+    const end = this.form.value.returnDate;
+    if (locId && start && end) this.loadAvailableBikes(locId, start, end);
   }
 
   toggleBike(id: string | number): void {
@@ -194,34 +237,6 @@ export class ReservationComponent {
     this.form.patchValue({ accessories: [...this.selectedAccessories] }, { emitEvent: false });
   }
 
-  get availableTypologies(): string[] {
-    const names = new Set<string>();
-    for (const b of this.availableBikes) {
-      if (typeof b.bikeTypology === 'object' && b.bikeTypology?.name) names.add(b.bikeTypology.name);
-    }
-    return [...names];
-  }
-
-  get availableSizes(): string[] {
-    const names = new Set<string>();
-    for (const b of this.availableBikes) {
-      if (typeof b.bikeSize === 'object' && b.bikeSize?.name) names.add(b.bikeSize.name);
-    }
-    return [...names];
-  }
-
-  get filteredBikes(): any[] {
-    return this.availableBikes.filter(b => {
-      if (this.selectedTypology) {
-        const tName = typeof b.bikeTypology === 'object' ? b.bikeTypology?.name : '';
-        if (tName !== this.selectedTypology) return false;
-      }
-      if (this.selectedSize) {
-        const sName = typeof b.bikeSize === 'object' ? b.bikeSize?.name : '';
-        if (sName !== this.selectedSize) return false;
-      }
-      return true;
-    });
   }
 
   /* Calendar */

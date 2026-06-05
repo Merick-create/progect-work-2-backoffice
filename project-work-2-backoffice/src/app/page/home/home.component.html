@@ -9,7 +9,7 @@
       Riparazioni, manutenzione e consulenza professionale per la tua bici.
     </p>
     <div class="hero-buttons">
-      <a href="/register" class="btn btn-hero btn-open-account">
+      <a href="/register" class="btn btn-hero btn-open-account" *ngIf="!(auth.isAuthenticated$ | async)">
         <i class="bi bi-person-plus"></i>
         Apri un Account
       </a>

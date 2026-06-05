@@ -11,6 +11,7 @@ import { AuthService } from '../../service/auth.service';
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
+  protected auth = inject(AuthService);
   
   @HostListener('window:scroll', [])
   onScroll() {

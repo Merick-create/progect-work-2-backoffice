@@ -1,6 +1,7 @@
 import { Component, inject, HostListener} from '@angular/core';
 import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
+import { JwtService } from '../../service/jwt.service';
 
 
 
@@ -12,6 +13,11 @@ import { AuthService } from '../../service/auth.service';
 })
 export class HomeComponent {
   protected auth = inject(AuthService);
+  protected jwtSrv = inject(JwtService);
+
+  get isLoggedIn(): boolean {
+    return this.jwtSrv.hasToken() && !!this.jwtSrv.decodeToken();
+  }
   
   @HostListener('window:scroll', [])
   onScroll() {

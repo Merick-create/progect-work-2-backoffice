@@ -237,7 +237,6 @@ export class ReservationComponent {
     this.form.patchValue({ accessories: [...this.selectedAccessories] }, { emitEvent: false });
   }
 
-  }
 
   buildCalendar(): void {
     const firstDay = new Date(this.calendarYear, this.calendarMonth, 1);
@@ -460,3 +459,4 @@ export class ReservationComponent {
       }
     });
   }
+}

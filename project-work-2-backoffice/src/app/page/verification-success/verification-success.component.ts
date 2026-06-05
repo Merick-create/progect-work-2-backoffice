@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class VerificationSuccessComponent {
   constructor(private router: Router) {}
 
-  goToHome(): void {
-    this.router.navigate(['/home']);
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

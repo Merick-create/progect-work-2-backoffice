@@ -10,9 +10,8 @@ export class BikeService {
 
   private http = inject(HttpClient);
 
-  getAvailable(locationId: string, date?: string) {
-    let params = `location=${locationId}&available=true`;
-    if (date) params += `&date=${date}`;
+  getAvailable(locationId: string, startDate: string, endDate: string) {
+    let params = `location=${locationId}&available=true&startDate=${startDate}&endDate=${endDate}`;
     return this.http.get<Bike[]>(`${environment.apiUrl}/api/bikes?${params}`);
   }
 }

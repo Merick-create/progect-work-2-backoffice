@@ -134,9 +134,10 @@ export class ReservationComponent {
   watchFilters(): void {
     combineLatest([
       this.form.get('pickupLocation')!.valueChanges,
-      this.form.get('pickupDate')!.valueChanges
-    ]).subscribe(([locId, date]) => {
-      if (locId && date) this.loadAvailableBikes(locId, date);
+      this.form.get('pickupDate')!.valueChanges,
+      this.form.get('returnDate')!.valueChanges
+    ]).subscribe(([locId, pickup, ret]) => {
+      if (locId && pickup && ret) this.loadAvailableBikes(locId, pickup, ret);
     });
   }
 
@@ -158,11 +159,11 @@ export class ReservationComponent {
     });
   }
 
-  loadAvailableBikes(locationId: string, date: string): void {
+  loadAvailableBikes(locationId: string, startDate: string, endDate: string): void {
     this.loading = true;
     this.selectedTypology = '';
     this.selectedSize = '';
-    this.bikeService.getAvailable(locationId, date).subscribe({
+    this.bikeService.getAvailable(locationId, startDate, endDate).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
         this.selectedBikes = [];

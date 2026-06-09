@@ -261,18 +261,24 @@
           <h3 class="extra-label"><i class="bi bi-shield-check"></i> Assicurazione</h3>
           <div class="card-grid">
             <div class="sel-card"
+              *ngFor="let l of locations"
+              [class.selected]="form.value.pickupLocation === l.id"
+              [class.invalid]="isInvalid('pickupLocation')"
+              (click)="form.patchValue({ pickupLocation: l.id })">
+              <div class="sel-card-icon"><i class="bi bi-geo-alt"></i></div>
+              <div class="sel-card-name">{{ l.name }}</div>
+              <div class="sel-card-check" *ngIf="form.value.pickupLocation === l.id">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+            </div>
+            <div class="sel-card"
               [class.selected]="!form.value.insuranceCoverage"
-              (click)="form.patchValue({ insuranceCoverage: '' })">
+              (click)="form.patchValue({ insuranceCoverage: null })">
               <div class="sel-card-icon"><i class="bi bi-shield-slash"></i></div>
               <div class="sel-card-name">Nessuna copertura</div>
-              <div class="sel-card-check" *ngIf="!form.value.insuranceCoverage"><i class="bi bi-check-circle-fill"></i></div>
-            </div>
-            <div class="sel-card" *ngFor="let i of insuranceCoverages"
-              [class.selected]="form.value.insuranceCoverage === i.id"
-              (click)="form.patchValue({ insuranceCoverage: i.id })">
-              <div class="sel-card-icon"><i class="bi bi-shield-fill-check"></i></div>
-              <div class="sel-card-name">{{ i.name }}</div>
-              <div class="sel-card-check" *ngIf="form.value.insuranceCoverage === i.id"><i class="bi bi-check-circle-fill"></i></div>
+              <div class="sel-card-check" *ngIf="!form.value.insuranceCoverage">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
             </div>
           </div>
         </div>

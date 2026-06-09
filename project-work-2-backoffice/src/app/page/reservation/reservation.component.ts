@@ -439,15 +439,18 @@ export class ReservationComponent {
 
     this.submitting = true;
 
-    const data = {
+    const data: any = {
       pickupDate: new Date(this.form.value.pickupDate),
       pickupTime: this.form.value.pickupTime,
       pickupLocation: this.form.value.pickupLocation,
       returnDateTime: new Date(`${this.form.value.returnDate}T${this.form.value.returnTime}`),
       bikes: this.selectedBikes,
       accessories: this.form.value.accessories,
-      insuranceCoverage: this.form.value.insuranceCoverage
     };
+
+  if (this.form.value.insuranceCoverage) {
+    data.insuranceCoverage = this.form.value.insuranceCoverage;
+  }
 
     this.reservationService.add(data).subscribe({
       next: () => {

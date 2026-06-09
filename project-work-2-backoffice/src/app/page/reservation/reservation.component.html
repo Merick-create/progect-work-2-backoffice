@@ -252,6 +252,7 @@
               (click)="toggleAccessory(a.id)">
               <div class="sel-card-icon"><i class="bi bi-tools"></i></div>
               <div class="sel-card-name">{{ a.name }}</div>
+              <div class="sel-card-price" *ngIf="a.halfDateRate > 0">€{{ a.halfDateRate }}/mezza g.</div>
               <div class="sel-card-check" *ngIf="selectedAccessories.includes(a.id)"><i class="bi bi-check-circle-fill"></i></div>
             </div>
           </div>

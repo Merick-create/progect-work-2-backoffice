@@ -58,6 +58,10 @@ export class ReservationComponent {
   selectedTypology = '';
   selectedSize = '';
 
+  totalPrice = 0;
+  totalHalfDays = 0;
+  priceBreakdown: { label: string; amount: number }[] = [];
+
   /* Calendar */
   calendarMonth = 0;
   calendarYear = 0;
@@ -134,6 +138,7 @@ export class ReservationComponent {
     this.loadData();
     this.watchFilters();
     this.watchPickupDate();
+    this.watchPrice();
   }
 
   initForm(): void {
@@ -187,6 +192,60 @@ export class ReservationComponent {
         }
       }
     });
+  }
+
+  private watchPrice(): void {
+    this.form.valueChanges.subscribe(() => this.calculatePrice());
+  }
+
+  private calculatePrice(): void {
+    const { pickupDate, pickupTime, returnDate, returnTime } = this.form.value;
+
+    this.totalPrice = 0;
+    this.totalHalfDays = 0;
+    this.priceBreakdown = [];
+
+    if (!pickupDate || !pickupTime || !returnDate || !returnTime) return;
+
+    const pickup = new Date(pickupDate);
+    if (pickupTime.includes(':')) {
+      const [hours, minutes] = pickupTime.split(':').map(Number);
+      pickup.setUTCHours(hours, minutes, 0, 0);
+    }
+
+    const retDate = new Date(`${returnDate}T${returnTime}`);
+    const diffInMs = retDate.getTime() - pickup.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    if (diffInHours <= 0) return;
+
+    this.totalHalfDays = Math.ceil(diffInHours / 12);
+
+    const items: { label: string; amount: number }[] = [];
+
+    this.selectedBikes.forEach(bikeId => {
+      const bike = this.availableBikes.find(b => String(b.id) === bikeId);
+      if (!bike) return;
+      const sizeRate = (bike.bikeSize as any)?.halfDateRate || 0;
+      const typologyRate = (bike.bikeTypology as any)?.halfDateRate || 0;
+      const amount = (sizeRate + typologyRate) * this.totalHalfDays;
+      if (amount > 0) items.push({ label: `Bici ${bike.code || ''}`, amount });
+    });
+
+    this.selectedAccessories.forEach(accId => {
+      const acc = this.accessories.find(a => a.id === accId);
+      if (!acc) return;
+      const amount = (acc.halfDateRate || 0) * this.totalHalfDays;
+      if (amount > 0) items.push({ label: acc.name, amount });
+    });
+
+    const insuranceId = this.form.value.insuranceCoverage;
+    if (insuranceId) {
+      const ins = this.insuranceCoverages.find(c => c.id === insuranceId);
+      if (ins?.price) items.push({ label: ins.name, amount: ins.price });
+    }
+
+    this.priceBreakdown = items;
+    this.totalPrice = items.reduce((sum, item) => sum + item.amount, 0);
   }
 
   loadAvailableBikes(locationId: string, startDate: string, endDate: string): void {

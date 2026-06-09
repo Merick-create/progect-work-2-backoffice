@@ -3,4 +3,5 @@ export interface BikeSizesEntity {
     name: string;
     minHeight: number;
     maxHeight: number;
+    halfDateRate: number;
 }

@@ -256,6 +256,7 @@ export class ReservationComponent {
         this.selectedBikes = [];
         this.form.patchValue({ bikes: [] }, { emitEvent: false });
         this.loading = false;
+        this.calculatePrice();
       },
       error: () => this.loading = false
     });
@@ -286,6 +287,7 @@ export class ReservationComponent {
       this.selectedBikes.push(idStr);
     }
     this.form.patchValue({ bikes: this.selectedBikes }, { emitEvent: false });
+    this.calculatePrice();
   }
 
   toggleAccessory(id: string): void {
@@ -296,6 +298,7 @@ export class ReservationComponent {
       this.selectedAccessories.push(id);
     }
     this.form.patchValue({ accessories: [...this.selectedAccessories] }, { emitEvent: false });
+    this.calculatePrice();
   }
 
 

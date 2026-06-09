@@ -8,7 +8,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './utils/auth.interceptor';
 import { logoutInterceptor } from './utils/logout.interceptor';
-import {CommonModule} from "@angular/common";
+import { errorInterceptor } from './utils/error.interceptor';
+import { CommonModule } from "@angular/common";
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ReservationComponent } from './page/reservation/reservation.component';
 import { HomeComponent } from '../app/page/home/home.component';
@@ -17,7 +18,7 @@ import { MyReservationsComponent } from './page/my-reservations/my-reservations.
 import { VerificationSentComponent } from './page/verification-sent/verification-sent.component';
 import { VerifyEmailComponent } from './page/verify-email/verify-email.component';
 import { VerificationSuccessComponent } from './page/verification-success/verification-success.component';
-
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { VerificationSuccessComponent } from './page/verification-success/verifi
     MyReservationsComponent,
     VerificationSentComponent,
     VerifyEmailComponent,
-    VerificationSuccessComponent
+    VerificationSuccessComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,
@@ -42,8 +44,9 @@ import { VerificationSuccessComponent } from './page/verification-success/verifi
   ],
   providers: [
     provideHttpClient(
-      withInterceptors([authInterceptor, logoutInterceptor])
-    )],
+      withInterceptors([authInterceptor, logoutInterceptor, errorInterceptor])
+    )
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { ReservationService } from '../../service/reservation.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { BikeService } from '../../service/bikes.service';
 import { InsuranceCoverageService } from '../../service/coverage.service';
-import { BikeAccessoryService } from '../..//service/bike-accessory.service';
+import { BikeAccessoryService } from '../../service/bike-accessory.service';
 import { LocationEntity } from '../../../enity/location/location-entity';
 import { LocationService } from '../../service/location.service';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
 import { BikeTypologiesService } from '../../service/bike-typologies.service';
 import { BikeSizesService } from '../../service/bike-sizes.service';
+import { ToastService } from '../../service/toast.service';
 
 @Component({
   selector: 'app-reservation',
@@ -25,6 +26,7 @@ export class ReservationComponent {
   private insuranceCoverageService = inject(InsuranceCoverageService);
   private bikeTypologiesService = inject(BikeTypologiesService);
   private bikeSizesService = inject(BikeSizesService);
+  private toastService = inject(ToastService);
 
   form!: FormGroup;
   refresh$ = new BehaviorSubject<void>(undefined);
@@ -141,10 +143,10 @@ export class ReservationComponent {
       pickupLocation: ['', Validators.required],
       returnDate: ['', Validators.required],
       returnTime: ['', Validators.required],
-      bikes: [[], Validators.required],
+      bikes: [[], [Validators.required, minBikesValidator()]],
       accessories: [[]],
       insuranceCoverage: ['']
-    });
+    }, { validators: returnAfterPickupValidator });
   }
 
   loadData(): void {
@@ -400,8 +402,15 @@ export class ReservationComponent {
   }
 
   nextStep(): void {
-    if (this.currentStep === 0 && !this.form.value.pickupLocation) return;
-    if (this.currentStep === 1 && (!this.form.value.pickupDate || !this.form.value.pickupTime || !this.form.value.returnDate || !this.form.value.returnTime)) return;
+    if (this.currentStep === 0) {
+      this.form.get('pickupLocation')?.markAsTouched();
+      if (!this.form.value.pickupLocation) return;
+    }
+    if (this.currentStep === 1) {
+      ['pickupDate', 'pickupTime', 'returnDate', 'returnTime'].forEach(f => this.form.get(f)?.markAsTouched());
+      if (!this.form.value.pickupDate || !this.form.value.pickupTime || !this.form.value.returnDate || !this.form.value.returnTime) return;
+      if (this.form.errors?.['returnAfterPickup']) return;
+    }
     if (this.currentStep < this.steps.length - 1) this.currentStep++;
   }
 
@@ -424,6 +433,7 @@ export class ReservationComponent {
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.toastService.warning('Compila tutti i campi obbligatori');
       return;
     }
 
@@ -452,11 +462,41 @@ export class ReservationComponent {
         this.currentStep = 0;
         this.refresh$.next();
         this.submitting = false;
+        this.toastService.success('Prenotazione confermata!');
       },
       error: () => {
-        alert('Errore prenotazione');
         this.submitting = false;
       }
     });
   }
+
+  isInvalid(control: string): boolean {
+    const c = this.form.get(control);
+    return !!c && c.invalid && (c.dirty || c.touched);
+  }
+
+  fieldError(control: string): string {
+    const c = this.form.get(control);
+    if (!c || !c.errors || !(c.dirty || c.touched)) return '';
+    if (c.errors['required']) return 'Campo obbligatorio';
+    if (c.errors['email']) return 'Email non valida';
+    if (c.errors['minlength']) return `Minimo ${c.errors['minlength'].requiredLength} caratteri`;
+    if (c.errors['minBikes']) return 'Seleziona almeno una bici';
+    if (c.errors['returnAfterPickup']) return 'La data di restituzione deve essere uguale o successiva al ritiro';
+    return '';
+  }
+}
+
+export function minBikesValidator(): ValidationErrors | null {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = control.value;
+    return Array.isArray(val) && val.length > 0 ? null : { minBikes: true };
+  };
+}
+
+export function returnAfterPickupValidator(group: AbstractControl): ValidationErrors | null {
+  const pickup = group.get('pickupDate')?.value;
+  const ret = group.get('returnDate')?.value;
+  if (pickup && ret && ret < pickup) return { returnAfterPickup: true };
+  return null;
 }

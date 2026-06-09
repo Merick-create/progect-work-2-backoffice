@@ -70,12 +70,8 @@ label {
   font-size: 14px;
 }
 
-/* ERROR */
-.error {
-  margin-top: 10px;
-  color: #b91c1c;
-  font-size: 13px;
-}
+.input-box.invalid{border-color:#b91c1c}
+.field-err{font-size:13px;color:#b91c1c;margin-top:4px}
 
 /* BUTTON */
 button {

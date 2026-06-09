@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <!-- Step 0: Sede -->
+        <!-- Step 0: Sede -->
       <div class="step-content" *ngIf="currentStep === 0">
         <h2 class="step-heading">Dove vuoi ritirare la bici?</h2>
         <p class="step-sub">Seleziona la sede di ritiro più comoda per te</p>
@@ -34,12 +34,14 @@
           <div class="sel-card"
             *ngFor="let l of locations"
             [class.selected]="form.value.pickupLocation === l.id"
+            [class.invalid]="isInvalid('pickupLocation')"
             (click)="form.patchValue({ pickupLocation: l.id })">
             <div class="sel-card-icon"><i class="bi bi-geo-alt"></i></div>
             <div class="sel-card-name">{{ l.name }}</div>
             <div class="sel-card-check" *ngIf="form.value.pickupLocation === l.id"><i class="bi bi-check-circle-fill"></i></div>
           </div>
         </div>
+        <div class="field-err" *ngIf="isInvalid('pickupLocation')">{{ fieldError('pickupLocation') }}</div>
       </div>
 
       <!-- Step 1: Data -->
@@ -112,6 +114,9 @@
             <div class="slots-empty" *ngIf="!selectedDateStr">
               <span>Scegli un giorno dal calendario per vedere gli orari disponibili</span>
             </div>
+          </div>
+          <div class="field-err" *ngIf="isInvalid('pickupDate') || isInvalid('pickupTime') || isInvalid('returnDate') || isInvalid('returnTime') || form.errors?.['returnAfterPickup']">
+            {{ form.errors?.['returnAfterPickup'] ? 'La data di restituzione deve essere uguale o successiva al ritiro' : 'Completa tutti i campi data e ora' }}
           </div>
         </div>
 
@@ -231,6 +236,7 @@
             <div class="bike-detail light">{{ bike.bikeSize?.name }}</div>
           </div>
         </div>
+        <div class="field-err" *ngIf="isInvalid('bikes')">{{ fieldError('bikes') }}</div>
       </div>
 
       <!-- Step 3: Extra -->

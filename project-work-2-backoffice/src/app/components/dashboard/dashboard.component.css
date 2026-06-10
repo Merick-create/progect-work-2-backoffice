@@ -16,6 +16,16 @@
   margin-right: -140px;
 }
 
+.navbar-brand i {
+  background: linear-gradient(135deg, #9F44DB, #CA54D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.6rem;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+
 .navbar-brand:hover {
   background: linear-gradient(135deg, #CA54D4, #9F44DB);
   -webkit-background-clip: text;

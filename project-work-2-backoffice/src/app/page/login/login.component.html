@@ -23,15 +23,7 @@
       </div>
       <div class="field-err" *ngIf="isInvalid('password')">{{ fieldError('password') }}</div>
 
-      <!-- ROW -->
-      <div class="row">
-        <label class="remember">
-          <input type="checkbox">
-          Ricordami
-        </label>
-
-        <a routerLink="/forgot-password">Password dimenticata?</a>
-      </div>
+      
 
       <!-- BUTTON -->
       <button type="submit" [disabled]="loading">

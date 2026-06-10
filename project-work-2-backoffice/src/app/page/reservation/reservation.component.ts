@@ -7,6 +7,7 @@ import { BikeAccessoryService } from '../../service/bike-accessory.service';
 import { LocationEntity } from '../../../enity/location/location-entity';
 import { LocationService } from '../../service/location.service';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
+import { Router } from '@angular/router';
 import { BikeTypologiesService } from '../../service/bike-typologies.service';
 import { BikeSizesService } from '../../service/bike-sizes.service';
 import { ToastService } from '../../service/toast.service';
@@ -27,6 +28,7 @@ export class ReservationComponent {
   private bikeTypologiesService = inject(BikeTypologiesService);
   private bikeSizesService = inject(BikeSizesService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
 
   form!: FormGroup;
   refresh$ = new BehaviorSubject<void>(undefined);
@@ -516,18 +518,8 @@ export class ReservationComponent {
 
     this.reservationService.add(data).subscribe({
       next: () => {
-        this.form.reset();
-        this.selectedBikes = [];
-        this.selectedAccessories = [];
-        this.availableBikes = [];
-        this.selectedDateStr = '';
-        this.selectedTimeStr = '';
-        this.returnSelectedDateStr = '';
-        this.returnSelectedTimeStr = '';
-        this.currentStep = 0;
-        this.refresh$.next();
         this.submitting = false;
-        this.toastService.success('Prenotazione confermata!');
+        this.router.navigate(['/reservation-success']);
       },
       error: () => {
         this.submitting = false;

@@ -10,6 +10,7 @@ import { MyReservationsComponent } from './page/my-reservations/my-reservations.
 import { VerificationSentComponent } from './page/verification-sent/verification-sent.component';
 import { VerifyEmailComponent } from './page/verify-email/verify-email.component';
 import { VerificationSuccessComponent } from './page/verification-success/verification-success.component';
+import { ReservationSuccessComponent } from './page/reservation-success/reservation-success.component';
 import { authGuard } from './utils/auth.guard';
 
 const routes: Routes = [
@@ -44,6 +45,11 @@ const routes: Routes = [
   {
     path: 'reservation',
     component: ReservationComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'reservation-success',
+    component: ReservationSuccessComponent,
     canActivate: [authGuard]
   },
   {

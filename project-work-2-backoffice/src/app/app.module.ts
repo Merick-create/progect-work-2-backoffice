@@ -18,6 +18,7 @@ import { MyReservationsComponent } from './page/my-reservations/my-reservations.
 import { VerificationSentComponent } from './page/verification-sent/verification-sent.component';
 import { VerifyEmailComponent } from './page/verify-email/verify-email.component';
 import { VerificationSuccessComponent } from './page/verification-success/verification-success.component';
+import { ReservationSuccessComponent } from './page/reservation-success/reservation-success.component';
 import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
@@ -33,6 +34,7 @@ import { ToastComponent } from './components/toast/toast.component';
     VerificationSentComponent,
     VerifyEmailComponent,
     VerificationSuccessComponent,
+    ReservationSuccessComponent,
     ToastComponent
   ],
   imports: [

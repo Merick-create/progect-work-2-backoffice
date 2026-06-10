@@ -68,6 +68,7 @@ Le route sono definite in `app-routing.module.ts`:
 | `/verify-email` | VerifyEmailComponent | — |
 | `/verification-success` | VerificationSuccessComponent | — |
 | `/reservation` | ReservationComponent | `authGuard` |
+| `/reservation-success` | ReservationSuccessComponent | `authGuard` |
 | `/dashboard` | DashboardComponent | — |
 | `/my-reservations` | MyReservationsComponent | `authGuard` |
 | `/profilo` | ProfileComponent | `authGuard` |
@@ -111,6 +112,7 @@ project-work-2-backoffice/
 │   │   │   ├── login/                     # Form di login
 │   │   │   ├── register/                  # Form di registrazione
 │   │   │   ├── reservation/               # Wizard prenotazione multi-step
+│   │   │   ├── reservation-success/       # Pagina di conferma prenotazione
 │   │   │   ├── my-reservations/           # Elenco prenotazioni utente
 │   │   │   ├── verification-sent/         # "Verifica inviata"
 │   │   │   ├── verify-email/             # Verifica email con token
@@ -194,11 +196,13 @@ project-work-2-backoffice/
    - **Bici**: filtro per tipologia/taglia, selezione biciclette disponibili
    - **Extra**: accessori e copertura assicurativa
    - Calcolo prezzo in tempo reale basato su periodi da mezza giornata (halfDateRate)
-9. **Le mie prenotazioni** — Elenco prenotazioni raggruppate per stato: in_rental (attive), pending (correnti), completed, cancelled. Pulsante di cancellazione per prenotazioni pending.
-10. **Profilo utente** — Visualizzazione dati utente. Form per modifica email o password (salvataggio simulato con `setTimeout`).
-11. **Notifiche toast** — Sistema globale tramite `ToastService`. Supporta tipi success, error, warning, info. Auto-dismiss configurabile (4.5s default, 6s per errori).
-12. **Direttive strutturali** — `*ifAuthenticated` per contenuti condizionali basati su autenticazione, `*appIfRole` per contenuti condizionali basati su ruolo.
-13. **Gestione errori** — Interceptor HTTP per errori non-401 con toast contenente il messaggio di errore. Errori 401 triggerano logout automatico.
+   - Al completamento, reindirizzamento alla pagina di conferma `/reservation-success`
+9. **Pagina di conferma prenotazione** — Pagina di ringraziamento con animazioni, visualizzata dopo l'invio del form di prenotazione. Pulsanti per visualizzare le prenotazioni o tornare alla home.
+10. **Le mie prenotazioni** — Elenco prenotazioni raggruppate per stato: in_rental (attive), pending (correnti), completed, cancelled. Pulsante di cancellazione per prenotazioni pending.
+11. **Profilo utente** — Visualizzazione dati utente. Form per modifica email o password (salvataggio simulato con `setTimeout`).
+12. **Notifiche toast** — Sistema globale tramite `ToastService`. Supporta tipi success, error, warning, info. Auto-dismiss configurabile (4.5s default, 6s per errori).
+13. **Direttive strutturali** — `*ifAuthenticated` per contenuti condizionali basati su autenticazione, `*appIfRole` per contenuti condizionali basati su ruolo.
+14. **Gestione errori** — Interceptor HTTP per errori non-401 con toast contenente il messaggio di errore. Errori 401 triggerano logout automatico.
 
 ---
 

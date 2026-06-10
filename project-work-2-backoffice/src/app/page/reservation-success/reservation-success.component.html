@@ -1,0 +1,24 @@
+<div class="success-page">
+  <div class="success-card">
+    <div class="icon-wrapper">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h2>Prenotazione confermata!</h2>
+    <p class="main-text">
+      La tua prenotazione &egrave; stata ricevuta con successo.
+    </p>
+    <p class="sub-text">
+      Riceverai una email di conferma con tutti i dettagli. Puoi visualizzare e gestire le tue prenotazioni nella sezione dedicata.
+    </p>
+    <div class="actions">
+      <button (click)="goToMyReservations()" class="btn-primary">
+        <i class="bi bi-list-check"></i>
+        Le mie prenotazioni
+      </button>
+      <button (click)="goHome()" class="btn-secondary">
+        <i class="bi bi-house"></i>
+        Torna alla home
+      </button>
+    </div>
+  </div>
+</div>

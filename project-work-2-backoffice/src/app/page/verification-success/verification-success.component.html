@@ -5,14 +5,18 @@
     </div>
     <h2>Account verificato!</h2>
     <p class="main-text">
-      Il tuo account è stato verificato con successo.
+      Il tuo account &egrave; stato verificato con successo.
     </p>
     <p class="sub-text">
-      Ora puoi accedere a tutte le funzionalità della piattaforma.
+      Ora puoi accedere a tutte le funzionalit&agrave; della piattaforma.
     </p>
     <button (click)="goToLogin()" class="home-btn">
       <i class="bi bi-box-arrow-in-right"></i>
       Vai al login
+    </button>
+    <button *ngIf="hasPendingReservation" (click)="continueReservation()" class="continue-btn">
+      <i class="bi bi-bicycle"></i>
+      Continua prenotazione
     </button>
   </div>
 </div>

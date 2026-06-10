@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -14,9 +14,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   protected fb = inject(FormBuilder);
   protected authSrv = inject(AuthService);
   protected router = inject(Router);
+  protected activatedRoute = inject(ActivatedRoute);
 
   protected destroyed$ = new Subject<void>();
   loading = false;
+  returnUrl: string | null = null;
 
   registerForm = this.fb.group({
     firstName: ['', Validators.required],
@@ -25,7 +27,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.activatedRoute.queryParams
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(params => {
+        this.returnUrl = params['returnUrl'] || null;
+        if (this.returnUrl) {
+          localStorage.setItem('pendingReturnUrl', this.returnUrl);
+        }
+      });
+  }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
@@ -49,7 +60,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     })
     .subscribe({
       next: () => this.router.navigate(['/verification-sent']),
-      error: () => this.loading = false
+      error: () => { this.loading = false; localStorage.removeItem('pendingReturnUrl'); }
     });
   }
 

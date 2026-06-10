@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9F44DB 0%, #CA54D4 100%);
   padding: 20px;
 }
 
@@ -58,9 +58,9 @@ h2 {
   align-items: center;
   gap: 8px;
   padding: 12px 28px;
-  border: 2px solid #667eea;
+  border: 2px solid #9F44DB;
   background: transparent;
-  color: #667eea;
+  color: #9F44DB;
   border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 600;
@@ -69,11 +69,11 @@ h2 {
 }
 
 .resend-btn:hover {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #9F44DB, #CA54D4);
   color: white;
   border-color: transparent;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+  box-shadow: 0 6px 20px rgba(159,68,219,0.3);
 }
 
 .back-link {
@@ -88,7 +88,7 @@ h2 {
 }
 
 .back-link a:hover {
-  color: #667eea;
+  color: #9F44DB;
 }
 
 @keyframes fadeInUp {

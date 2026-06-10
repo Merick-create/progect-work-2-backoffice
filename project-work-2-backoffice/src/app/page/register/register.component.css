@@ -61,8 +61,8 @@ label {
 }
 
 .input-box:focus-within {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  border-color: #9F44DB;
+  box-shadow: 0 0 0 3px rgba(159, 68, 219, 0.15);
   background: #ffffff;
 }
 
@@ -97,7 +97,7 @@ button {
   width: 100%;
   margin-top: 24px;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #9F44DB, #CA54D4);
   color: white;
   border: none;
   border-radius: 12px;
@@ -109,7 +109,7 @@ button {
 
 button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+  box-shadow: 0 6px 20px rgba(159, 68, 219, 0.35);
 }
 
 button:disabled {
@@ -126,7 +126,7 @@ button:disabled {
 }
 
 .footer a {
-  color: #667eea;
+  color: #9F44DB;
   font-weight: 600;
   text-decoration: none;
 }

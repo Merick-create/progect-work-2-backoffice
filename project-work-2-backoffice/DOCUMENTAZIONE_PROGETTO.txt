@@ -1,0 +1,447 @@
+================================================================================
+  DOCUMENTAZIONE - Bike Lab (Project Work 2 Backoffice)
+================================================================================
+
+INDICE
+  1. Panoramica
+  2. Tecnologie e Dipendenze
+  3. Prerequisiti e Setup
+  4. Avvio del Progetto
+  5. Struttura del Progetto
+  6. Routing e Navigazione
+  7. Componenti
+  8. Servizi e API
+  9. Entity / Modelli Dati
+  10. Utility e Guardie
+  11. Calcolo del Prezzo (Frontend)
+  12. Sicurezza (Auth e Interceptor)
+  13. Stili e UI
+  14. Deploy
+  15. Credenziali e API
+
+
+================================================================================
+  1. PANORAMICA
+================================================================================
+
+Bike Lab è un'applicazione Angular per il noleggio di biciclette.
+Permette all'utente di:
+
+  - Registrarsi e autenticarsi (con verifica email)
+  - Visualizzare la home page con servizi e informazioni
+  - Prenotare biciclette tramite un form multi-step:
+      Step 0: Selezione della sede di ritiro
+      Step 1: Scelta data/ora di ritiro e restituzione
+      Step 2: Selezione bici disponibili (con filtri per tipologia e taglia)
+      Step 3: Aggiunta accessori e assicurazione
+  - Visualizzare il calcolo del prezzo in tempo reale durante la prenotazione
+  - Visualizzare e gestire le proprie prenotazioni
+  - Modificare il profilo utente
+
+Il backend si trova su Render all'indirizzo:
+  https://project-work-2-ethc.onrender.com
+
+L'applicazione è sviluppata con Angular 19 in modalità NgModule (standalone: false).
+
+
+================================================================================
+  2. TECNOLOGIE E DIPENDENZE
+================================================================================
+
+Framework e Librerie Principali:
+  - Angular 19.2.0 (CLI 19.2.1)
+  - TypeScript ~5.7.2
+  - RxJS ~7.8.0
+  - Bootstrap 5.3.8
+  - Bootstrap Icons 1.11.3 (via CDN)
+  - Zone.js ~0.15.0
+
+Dependencies di Sviluppo:
+  - Karma + Jasmine (test)
+  - Angular DevKit e Compiler CLI
+
+Node.js: v20 (vedi .nvmrc)
+
+
+================================================================================
+  3. PREREQUISITI E SETUP
+================================================================================
+
+- Node.js v20+
+- npm (incluso con Node.js)
+
+Clonare il repository ed eseguire:
+
+  npm install
+
+Questo installerà tutte le dipendenze elencate in package.json.
+
+
+================================================================================
+  4. AVVIO DEL PROGETTO
+================================================================================
+
+Comandi disponibili (definiti in package.json):
+
+  npm start              -> ng serve (sviluppo, default http://localhost:4200)
+  npm run build          -> ng build (produzione, output in dist/frontend)
+  npm run build:prod     -> npx ng build --configuration production
+  npm run watch          -> ng build --watch --configuration development
+  npm test               -> ng test (Karma/Jasmine)
+
+Il proxy per lo sviluppo è configurato in proxy.conf.json e reindirizza
+le richieste /api verso il backend su Render.
+
+Angular.json:
+  - defaultConfiguration per build: production
+  - defaultConfiguration per serve: development
+
+
+================================================================================
+  5. STRUTTURA DEL PROGETTO
+================================================================================
+
+project-work-2-backoffice/
+  angular.json              - Configurazione Angular CLI
+  package.json              - Dipendenze e script
+  proxy.conf.json           - Proxy per sviluppo locale
+  tsconfig.json             - Configurazione TypeScript root
+  tsconfig.app.json         - Configurazione TS per l'app
+  tsconfig.spec.json        - Configurazione TS per i test
+  .nvmrc                    - Versione Node (20)
+  public/
+    favicon.ico             - Icona del sito
+    _redirects              - Redirect per SPA hosting
+  src/
+    index.html              - Entry point HTML (titolo: "Bike-Lab")
+    main.ts                 - Bootstrap dell'app
+    styles.css              - Stili globali (vuoto, Bootstrap in angular.json)
+    app/
+      app.module.ts         - Modulo principale
+      app-routing.module.ts - Routing
+      app.component.*       - Componente root
+      components/
+        dashboard/          - Navbar principale
+        profile/            - Pagina profilo utente
+        toast/              - Sistema di notifiche toast
+      page/
+        home/               - Landing page
+        login/              - Login
+        register/           - Registrazione
+        reservation/        - Form prenotazione (multi-step)
+        my-reservations/    - Elenco prenotazioni utente
+        verification-sent/  - Verifica email inviata
+        verify-email/       - Handler verifica email
+        verification-success/ - Verifica completata
+      service/              - Servizi HTTP e logica di business
+      utils/                - Guardie, interceptor, directive
+    enity/                  - Modelli/Entity (nota: nome cartella "enity")
+    environments/           - Variabili d'ambiente
+
+
+================================================================================
+  6. ROUTING E NAVIGAZIONE
+================================================================================
+
+Definito in src/app/app-routing.module.ts
+
+  Path                    Componente                Guardia
+  ----------------------  ------------------------  ----------
+  ''                      HomeComponent             -
+  login                   LoginComponent            -
+  register                RegisterComponent         -
+  home                    HomeComponent             -
+  verification-sent       VerificationSentComponent -
+  verify-email            VerifyEmailComponent      -
+  verification-success    VerificationSuccessComponent -
+  reservation             ReservationComponent      authGuard
+  dashboard               DashboardComponent        -
+  my-reservations         MyReservationsComponent   authGuard
+  profilo                 ProfileComponent          authGuard
+  **                      redirect to ''            -
+
+La guardia authGuard (src/app/utils/auth.guard.ts) controlla se l'utente
+è autenticato tramite JwtService. Se non autenticato, reindirizza a /login
+con il parametro ?requestedUrl= per il redirect post-login.
+
+
+================================================================================
+  7. COMPONENTI
+================================================================================
+
+AppComponent (root)
+  - Contiene <app-dashboard> + <router-outlet> + <app-toast>
+
+--- LAYOUT COMPONENTS ---
+
+DashboardComponent (navbar)
+  - Logo "Bike Lab"
+  - Pulsanti Login/Register (utente non autenticato)
+  - Menu a tendina con avatar (utente autenticato): Profilo, Le mie prenotazioni, Logout
+  - Responsive con scroll spy
+
+ToastComponent
+  - Notifiche toast in basso a destra
+  - Tipi: success, error, warning, info
+  - Auto-dismiss con animazione
+
+ProfileComponent
+  - Hero gradient come intestazione
+  - Card profilo con avatar, nome, cognome, email
+  - Form per modifica email e password
+
+--- PAGE COMPONENTS ---
+
+HomeComponent
+  - Hero section con sfondo e overlay gradient
+  - Cards servizi (riparazioni, manutenzione, vendita bici)
+  - Sezione "About" con immagini e descrizione
+  - Sezione info (dove siamo, orari, contatti, servizi)
+  - Footer con link social (Facebook, Instagram, YouTube)
+  - Gestione token verifica email da query params
+
+LoginComponent
+  - Form email + password
+  - Checkbox "Ricordami"
+  - Link "Password dimenticata?"
+  - Reindirizzamento alla URL richiesta dopo login
+
+RegisterComponent
+  - Form nome, cognome, email, password
+  - Reindirizzamento a /verification-sent dopo registrazione
+
+ReservationComponent (form multi-step 4 step)
+  - Step 0 (Sede): Griglia card per selezionare sede di ritiro
+  - Step 1 (Data): Due calendari (ritiro e restituzione) + slot orari
+  - Step 2 (Bici): Filtri per tipologia/taglia, selezione bici da griglia
+  - Step 3 (Extra): Accessori (multi-select) + Assicurazione (single-select)
+  - Riepilogo prezzi visibile su tutti gli step (calcolato in tempo reale)
+  - Navigazione Avanti/Indietro con validazione per step
+
+MyReservationsComponent
+  - Elenco prenotazioni raggruppate per stato
+  - Stati: in_rental, pending, completed, cancelled
+  - Bottone cancella con conferma
+  - Lista vuota con messaggio
+
+
+================================================================================
+  8. SERVIZI E API
+================================================================================
+
+Tutti i servizi si trovano in src/app/service/ e usano HttpClient con
+base URL definito in environment.ts (vuoto in sviluppo per proxy, url
+completo in produzione).
+
+Servizio              Endpoint API                         Metodi
+-------               ------------                         ------
+AuthService           POST /api/login                      login()
+                      POST /api/register                   register()
+                      POST /api/verify                     verifyEmail()
+                      POST /api/refreshToken               - (interno)
+
+BikeService           GET /api/bikes?location=&startDate=  getAvailable()
+                        &endDate=&bikeTypology=&bikeSize=
+
+BikeAccessoryService  GET /api/bike-accessories            list()
+
+BikeSizesService      GET /api/bike-sizes                  list()
+
+BikeTypologiesService GET /api/bike-typologies             list()
+
+InsuranceCoverageService GET /api/insurance-coverages      list()
+
+LocationService       GET /api/locations                   list()
+
+ReservationService    GET /api/reservations                list()
+                      POST /api/reservations               add()
+                      GET /api/reservations/:id            get()
+                      PUT /api/reservations/:id            update()
+                      DELETE /api/reservations/:id         delete()
+                      PUT /api/reservations/:id/status     updateStatus()
+
+UserService           GET /api/users                       list()
+                      GET /api/users/me                    getMe()
+
+ToastService          -                                    success(), error(),
+                                                            warning(), info()
+
+
+================================================================================
+  9. ENTITY / MODELLI DATI
+================================================================================
+
+I modelli si trovano in src/enity/ (nome cartella volutamente "enity").
+
+User
+  id?, firstName, lastName, fullName?, email, username?, role?
+
+LocationEntity
+  id?, name, address, city, phoneNumber, latitude?, longitude?
+
+BikeSizesEntity
+  id, name, minHeight, maxHeight, halfDateRate  <-- prezzo per mezza giornata
+
+BikeTypology
+  id, name, halfDateRate  <-- prezzo per mezza giornata
+
+Bike
+  id?, bikeSize (BikeSizesEntity | string), bikeTypology (BikeTypology | string),
+  location (Location | string), available, code
+
+BikeAccessoriesEntity
+  id, name, halfDateRate  <-- prezzo per mezza giornata
+
+InsuranceCoveragesEntity
+  id, name, description, price  <-- prezzo fijo (non per mezza giornata ma una tantum)
+
+Reservation
+  id, status (in_rental | completed | cancelled | pending),
+  pickupDate, pickupTime, pickupLocation, returnDateTime,
+  bikes (string[]), accessories?, insuranceCoverage?, createdAt?, updatedAt?
+
+
+================================================================================
+  10. UTILITY E GUARDIE
+================================================================================
+
+auth.guard.ts (CanActivateFn)
+  - Protegge le route riservate
+  - Se utente non autenticato -> redirect a /login?requestedUrl=...
+
+auth.interceptor.ts
+  - Aggiunge header Authorization: Bearer <token> a ogni richiesta HTTP
+
+logout.interceptor.ts
+  - Intercetta risposte 401 ed esegue logout automatico
+
+error.interceptor.ts
+  - Intercetta errori HTTP (non 401) e mostra toast con messaggio
+
+if-authenticated.directive.ts
+  - Direttiva strutturale *ifAuthenticated che mostra contenuto
+    solo se utente è loggato
+
+if-role.directive.ts
+  - Direttiva strutturale *appIfRole che mostra contenuto
+    solo per utenti con un determinato ruolo
+
+
+================================================================================
+  11. CALCOLO DEL PREZZO (FRONTEND)
+================================================================================
+
+Il prezzo viene calcolato lato frontend in tempo reale mentre l'utente
+compila il form di prenotazione. NON viene inviato alle API, serve solo
+come feedback visivo.
+
+Logica di calcolo (in src/app/page/reservation/reservation.component.ts,
+metodo calculatePrice):
+
+  1. Durata noleggio in ore:
+       pickup = new Date(pickupDate) con pickupTime in UTC
+       returnDate = new Date(returnDate + returnTime)
+       diffInHours = (returnDate - pickup) / (1000 * 60 * 60)
+
+  2. Conversione in mezze giornate (da 12 ore):
+       totalHalfDays = Math.ceil(diffInHours / 12)
+
+  3. Costo bici (per ogni bici selezionata):
+       ratePerHalfDay = bikeSize.halfDateRate + bikeTypology.halfDateRate
+       bikeCost = ratePerHalfDay * totalHalfDays
+
+  4. Costo accessori (per ogni accessorio selezionato):
+       accessoryCost = accessory.halfDateRate * totalHalfDays
+
+  5. Assicurazione:
+       insuranceCost = insuranceCoverage.price (prezzo fisso, non moltiplicato)
+
+  6. Totale:
+       totalPrice = bikesTotal + accessoriesTotal + insuranceCost
+
+Il ricalcolo avviene su:
+  - Change dei campi data/ora (tramite form.valueChanges)
+  - Toggle bici (chiamata diretta a calculatePrice)
+  - Toggle accessori (chiamata diretta a calculatePrice)
+  - Selezione assicurazione (tramite form.valueChanges)
+  - Cambio sede/data che ricarica le bici disponibili
+
+Il riepilogo prezzi mostra:
+  - Durata noleggio (numero mezze giornate)
+  - Dettaglio per ogni bici, accessorio e assicurazione selezionati
+  - Totale complessivo
+
+
+================================================================================
+  12. SICUREZZA (AUTH E INTERCEPTOR)
+================================================================================
+
+Flusso di autenticazione:
+  1. L'utente si registra (POST /api/register)
+  2. L'utente verifica l'email (tramite link ricevuto via email)
+  3. L'utente effettua il login (POST /api/login)
+  4. Il server restituisce accessToken e refreshToken
+  5. I token vengono salvati in localStorage tramite JwtService
+  6. L'auth.interceptor aggiunge il token a ogni richiesta
+  7. Il logout.interceptor gestisce il refresh automatico (o logout su 401)
+
+JwtService:
+  - getAccessToken() / getRefreshToken()
+  - storeTokens(accessToken, refreshToken)
+  - clearTokens()
+  - decodeToken() - decodifica e verifica expiry
+  - isAuthenticated() - ritorna true se token valido
+
+AuthService mantiene lo stato dell'utente con un BehaviorSubject.
+
+
+================================================================================
+  13. STILI E UI
+================================================================================
+
+- Bootstrap 5.3.8 è incluso globalmente in angular.json
+- Bootstrap Icons caricati via CDN in index.html
+- Gli stili specifici dei componenti sono inline nel CSS del componente
+- Il file styles.css globale è vuoto (tutto gestito per componente)
+
+Palette colori principali:
+  - Gradient hero: #667eea -> #764ba2 (viola/blu)
+  - Success: #2e7d32 (verde)
+  - Sfondi: #f0f2f5 (grigio chiaro), #f8f9ff (lavagna chiara)
+  - Testi: #1a1a2e (scuro), #8892a4 (grigio), #555 (medio)
+
+Il form di prenotazione è responsive (media query a 768px e 420px).
+
+
+================================================================================
+  14. DEPLOY
+================================================================================
+
+Per il deploy in produzione:
+
+  1. npm run build:prod
+     - Output in dist/frontend/
+     - Sostituisce environment.ts con environment.prod.ts
+     - Environment prod ha apiUrl = 'https://project-work-2-ethc.onrender.com'
+
+  2. Caricare il contenuto di dist/frontend/ su un hosting statico
+     (Netlify, Vercel, Render, ecc.)
+
+  3. Il file public/_redirects contiene la regola SPA:
+       /* /index.html 200
+     (necessario per hosting statici come Netlify per gestire il routing SPA)
+
+
+================================================================================
+  15. CREDENZIALI E API
+================================================================================
+
+Backend:  https://project-work-2-ethc.onrender.com
+Frontend: http://localhost:4200 (sviluppo), URL hosting (produzione)
+
+Per lo sviluppo, il file proxy.conf.json reindirizza le richieste /api
+al backend, evitando problemi di CORS.
+
+================================================================================
+  FINE DOCUMENTAZIONE
+================================================================================

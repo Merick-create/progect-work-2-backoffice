@@ -11,6 +11,9 @@ import { Router } from '@angular/router';
 import { BikeTypologiesService } from '../../service/bike-typologies.service';
 import { BikeSizesService } from '../../service/bike-sizes.service';
 import { ToastService } from '../../service/toast.service';
+import { JwtService } from '../../service/jwt.service';
+
+const STORAGE_KEY = 'pendingReservation';
 
 @Component({
   selector: 'app-reservation',
@@ -29,6 +32,7 @@ export class ReservationComponent {
   private bikeSizesService = inject(BikeSizesService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+  private jwtService = inject(JwtService);
 
   form!: FormGroup;
   refresh$ = new BehaviorSubject<void>(undefined);
@@ -141,6 +145,7 @@ export class ReservationComponent {
     this.watchFilters();
     this.watchPickupDate();
     this.watchPrice();
+    this.restorePending();
   }
 
   initForm(): void {
@@ -158,8 +163,8 @@ export class ReservationComponent {
 
   loadData(): void {
     this.locations$.subscribe(r => this.locations = r);
-    this.accessories$.subscribe(r => this.accessories = r);
-    this.insuranceCoverages$.subscribe(r => this.insuranceCoverages = r);
+    this.accessories$.subscribe(r => { this.accessories = r; this.calculatePrice(); });
+    this.insuranceCoverages$.subscribe(r => { this.insuranceCoverages = r; this.calculatePrice(); });
     this.bikeTypologies$.subscribe(r => this.bikeTypologies = r);
     this.bikeSizes$.subscribe(r => this.bikeSizes = r);
   }
@@ -173,6 +178,8 @@ export class ReservationComponent {
       if (locId && pickup && ret) {
         this.selectedTypology = '';
         this.selectedSize = '';
+        this.selectedBikes = [];
+        this.form.patchValue({ bikes: [] }, { emitEvent: false });
         this.loadAvailableBikes(locId, pickup, ret);
       }
     });
@@ -255,8 +262,6 @@ export class ReservationComponent {
     this.bikeService.getAvailable(locationId, startDate, endDate, this.selectedTypology, this.selectedSize).subscribe({
       next: (bikes) => {
         this.availableBikes = bikes;
-        this.selectedBikes = [];
-        this.form.patchValue({ bikes: [] }, { emitEvent: false });
         this.loading = false;
         this.calculatePrice();
       },
@@ -494,10 +499,85 @@ export class ReservationComponent {
     return false;
   }
 
+  private savePending(): void {
+    const data = {
+      pickupLocation: this.form.value.pickupLocation,
+      pickupDate: this.form.value.pickupDate,
+      pickupTime: this.form.value.pickupTime,
+      returnDate: this.form.value.returnDate,
+      returnTime: this.form.value.returnTime,
+      selectedBikes: this.selectedBikes,
+      selectedAccessories: this.selectedAccessories,
+      insuranceCoverage: this.form.value.insuranceCoverage,
+      selectedDateStr: this.selectedDateStr,
+      selectedTimeStr: this.selectedTimeStr,
+      returnSelectedDateStr: this.returnSelectedDateStr,
+      returnSelectedTimeStr: this.returnSelectedTimeStr,
+      selectedTypology: this.selectedTypology,
+      selectedSize: this.selectedSize,
+      currentStep: this.currentStep
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  private restorePending(): void {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    try {
+      const saved = JSON.parse(raw);
+      this.selectedBikes = saved.selectedBikes || [];
+      this.selectedAccessories = saved.selectedAccessories || [];
+
+      this.form.patchValue({
+        pickupLocation: saved.pickupLocation || '',
+        pickupDate: saved.pickupDate || '',
+        pickupTime: saved.pickupTime || '',
+        returnDate: saved.returnDate || '',
+        returnTime: saved.returnTime || '',
+        bikes: this.selectedBikes,
+        accessories: this.selectedAccessories,
+        insuranceCoverage: saved.insuranceCoverage || ''
+      }, { emitEvent: false });
+      this.selectedDateStr = saved.selectedDateStr || '';
+      this.selectedTimeStr = saved.selectedTimeStr || '';
+      this.returnSelectedDateStr = saved.returnSelectedDateStr || '';
+      this.returnSelectedTimeStr = saved.returnSelectedTimeStr || '';
+      this.selectedTypology = saved.selectedTypology || '';
+      this.selectedSize = saved.selectedSize || '';
+      this.currentStep = saved.currentStep || 0;
+
+      const locId = saved.pickupLocation;
+      const pickup = saved.pickupDate;
+      const ret = saved.returnDate;
+      if (locId && pickup && ret) {
+        this.loadAvailableBikes(locId, pickup, ret);
+      } else {
+        this.calculatePrice();
+      }
+
+      this.toastService.info('Prenotazione ripristinata. Verifica i dati e procedi con l\'invio.');
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  private clearPending(): void {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.toastService.warning('Compila tutti i campi obbligatori');
+      return;
+    }
+
+    const isAuth = !!this.jwtService.hasToken();
+
+    if (!isAuth) {
+      this.savePending();
+      this.router.navigate(['/register'], { queryParams: { returnUrl: '/reservation' } });
       return;
     }
 
@@ -519,6 +599,7 @@ export class ReservationComponent {
     this.reservationService.add(data).subscribe({
       next: () => {
         this.submitting = false;
+        this.clearPending();
         this.router.navigate(['/reservation-success']);
       },
       error: () => {

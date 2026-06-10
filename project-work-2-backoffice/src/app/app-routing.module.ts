@@ -44,8 +44,7 @@ const routes: Routes = [
   },
   {
     path: 'reservation',
-    component: ReservationComponent,
-    canActivate: [authGuard]
+    component: ReservationComponent
   },
   {
     path: 'reservation-success',

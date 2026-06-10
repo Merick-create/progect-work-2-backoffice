@@ -31,7 +31,12 @@ export class VerifyEmailComponent implements OnInit {
     setTimeout(() => {
       this.authService.verifyEmail(token).subscribe({
         next: () => {
-          this.router.navigate(['/verification-success']);
+          this.authService.logout();
+          const returnUrl = localStorage.getItem('pendingReturnUrl');
+          const queryParams: any = {};
+          if (returnUrl) queryParams.returnUrl = returnUrl;
+          this.router.navigate(['/verification-success'], { queryParams });
+          localStorage.removeItem('pendingReturnUrl');
         },
         error: (err) => {
           this.state = 'error';

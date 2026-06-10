@@ -40,7 +40,7 @@ Frontend web backoffice per il sistema di noleggio biciclette **Bike Lab**. Appl
 
 ### Organizzazione moduli
 
-L'applicazione utilizza l'architettura **NgModule-based** (non standalone), con un unico `AppModule` che dichiara tutti i componenti. I componenti sono suddivisi in tre categorie:
+L'applicazione utilizza l'architettura **NgModule-based** (non standalone), con un unico `AppModule` che dichiara tutti i componenti. I componenti sono suddivisi in quattro categorie:
 
 - `components/` — Componenti condivisi e riutilizzabili (navbar, toast, profilo)
 - `page/` — Componenti associati a route (home, login, register, reservation, ecc.)
@@ -54,6 +54,7 @@ Lo stato applicativo è gestito tramite **RxJS** senza librerie esterne (NgRx, S
 - `AuthService` utilizza `ReplaySubject<User | null>(1)` per mantenere l'utente corrente, esponendo `currentUser$` e `isAuthenticated$`
 - `ToastService` utilizza `BehaviorSubject<Toast[]>` per le notifiche toast
 - I componenti reservation e my-reservations usano `BehaviorSubject<void>` per triggerare il refresh dei dati via `switchMap`
+- **Persistenza locale** — Il wizard di prenotazione salva lo stato in `localStorage` (`pendingReservation`) per ripristinarlo dopo login/registrazione
 
 ### Routing
 
@@ -67,7 +68,7 @@ Le route sono definite in `app-routing.module.ts`:
 | `/verification-sent` | VerificationSentComponent | — |
 | `/verify-email` | VerifyEmailComponent | — |
 | `/verification-success` | VerificationSuccessComponent | — |
-| `/reservation` | ReservationComponent | `authGuard` |
+| `/reservation` | ReservationComponent | — |
 | `/reservation-success` | ReservationSuccessComponent | `authGuard` |
 | `/dashboard` | DashboardComponent | — |
 | `/my-reservations` | MyReservationsComponent | `authGuard` |
@@ -75,6 +76,7 @@ Le route sono definite in `app-routing.module.ts`:
 | `**` | redirect a `/` | — |
 
 La guardia `authGuard` verifica `isAuthenticated$` e reindirizza a `/login?requestedUrl=...` se l'utente non è autenticato.
+**Nota**: La rotta `/reservation` non è più protetta da `authGuard`; la protezione avviene al momento dell'invio (submit) — se l'utente non è autenticato, lo stato del form viene salvato e l'utente viene reindirizzato a `/register?returnUrl=/reservation`.
 
 ### API Layer
 
@@ -83,6 +85,18 @@ Le richieste HTTP sono gestite da servizi Angular con `HttpClient`. Tre **interc
 1. **`authInterceptor`** — Aggiunge l'header `Authorization: Bearer <token>` a ogni richiesta
 2. **`logoutInterceptor`** — Intercetta risposte `401` e chiama `AuthService.logout()`
 3. **`errorInterceptor`** — Mostra un toast di errore per errori HTTP non-401
+
+### Flusso di prenotazione con autenticazione differita
+
+Il wizard di prenotazione (`ReservationComponent`) implementa un flusso "salva e ripristina" per gestire utenti non autenticati:
+
+1. **Salvataggio automatico** — Al cambio step o modifica campi, lo stato completo del form viene serializzato in `localStorage` sotto la chiave `pendingReservation`
+2. **Submit protetto** — Al click su "Invia prenotazione", se manca il token JWT:
+   - Lo stato corrente viene salvato (`savePending()`)
+   - Redirect a `/register?returnUrl=/reservation`
+3. **Ripristino post-auth** — Al caricamento del component, `restorePending()` legge il `localStorage` e ripopola il form (location, date, orari, bici selezionate, accessori, copertura, step corrente)
+4. **Pulizia** — Dopo invio riuscito o logout, `clearPending()` rimuove il dato dal `localStorage`
+5. **Verifica email** — Dopo verifica email riuscita, se esiste `pendingReturnUrl`, la pagina di successo mostra un pulsante "Continua prenotazione" che porta al login con `requestedUrl=/reservation`
 
 ### Direttive strutturali
 

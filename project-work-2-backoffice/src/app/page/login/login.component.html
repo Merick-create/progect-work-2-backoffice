@@ -10,7 +10,7 @@
       <!-- EMAIL -->
       <label>Email address</label>
       <div class="input-box" [class.invalid]="isInvalid('username')">
-        <span class="icon">✉</span>
+        <span class="icon"><i class="bi bi-envelope"></i></span>
         <input type="email" formControlName="username" placeholder="nome@azienda.it">
       </div>
       <div class="field-err" *ngIf="isInvalid('username')">{{ fieldError('username') }}</div>
@@ -18,7 +18,7 @@
       <!-- PASSWORD -->
       <label>Password</label>
       <div class="input-box" [class.invalid]="isInvalid('password')">
-        <span class="icon">🔒</span>
+        <span class="icon"><i class="bi bi-lock"></i></span>
         <input type="password" formControlName="password" placeholder="••••••••">
       </div>
       <div class="field-err" *ngIf="isInvalid('password')">{{ fieldError('password') }}</div>

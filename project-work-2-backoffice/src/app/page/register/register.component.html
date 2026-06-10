@@ -10,7 +10,7 @@
       <!-- FIRST NAME -->
       <label>First Name</label>
       <div class="input-box" [class.invalid]="isInvalid('firstName')">
-        <span class="icon">👤</span>
+        <span class="icon"><i class="bi bi-person"></i></span>
         <input type="text" formControlName="firstName" placeholder="Mario">
       </div>
       <div class="field-err" *ngIf="isInvalid('firstName')">{{ fieldError('firstName') }}</div>
@@ -18,7 +18,7 @@
       <!-- LAST NAME -->
       <label>Last Name</label>
       <div class="input-box" [class.invalid]="isInvalid('lastName')">
-        <span class="icon">👤</span>
+        <span class="icon"><i class="bi bi-person"></i></span>
         <input type="text" formControlName="lastName" placeholder="Rossi">
       </div>
       <div class="field-err" *ngIf="isInvalid('lastName')">{{ fieldError('lastName') }}</div>
@@ -26,7 +26,7 @@
       <!-- EMAIL -->
       <label>Email</label>
       <div class="input-box" [class.invalid]="isInvalid('username')">
-        <span class="icon">✉</span>
+        <span class="icon"><i class="bi bi-envelope"></i></span>
         <input type="email" formControlName="username" placeholder="nome@azienda.it">
       </div>
       <div class="field-err" *ngIf="isInvalid('username')">{{ fieldError('username') }}</div>
@@ -34,7 +34,7 @@
       <!-- PASSWORD -->
       <label>Password</label>
       <div class="input-box" [class.invalid]="isInvalid('password')">
-        <span class="icon">🔒</span>
+        <span class="icon"><i class="bi bi-lock"></i></span>
         <input type="password" formControlName="password" placeholder="••••••••">
       </div>
       <div class="field-err" *ngIf="isInvalid('password')">{{ fieldError('password') }}</div>

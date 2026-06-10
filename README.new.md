@@ -103,6 +103,12 @@ Il wizard di prenotazione (`ReservationComponent`) implementa un flusso "salva e
 - `*ifAuthenticated` — Mostra il contenuto solo se l'utente è autenticato
 - `*appIfRole` — Mostra il contenuto solo se l'utente ha un ruolo specifico
 
+### Servizi chiave per la prenotazione
+
+- **`ReservationComponent`** — Wizard multi-step con logica di persistenza/ripristino (`savePending`, `restorePending`, `clearPending`)
+- **`JwtService`** — Verifica presenza token (`hasToken()`), decodifica manuale JWT, gestione expiry
+- **`AuthService`** — `tryRestoreUser()` per ripristino sessione al reload, logout, refresh token
+
 ---
 
 ## Struttura del progetto
@@ -189,27 +195,40 @@ project-work-2-backoffice/
    - Lo decodifica e controlla la scadenza
    - Se scaduto, tenta il refresh tramite `POST /api/refreshToken`
    - Se tutto fallisce, esegue il logout
-5. `authGuard` protegge le rotte riservate
+5. `authGuard` protegge le rotte riservate (`/my-reservations`, `/profilo`, `/reservation-success`)
 6. `authInterceptor` allega automaticamente il token a ogni richiesta HTTP
 7. `logoutInterceptor` gestisce le risposte 401 forzando il logout
+
+### Flusso registrazione + verifica email + ripristino prenotazione
+
+1. Utente non autenticato compila wizard prenotazione → al submit, stato salvato in `localStorage` (`pendingReservation`)
+2. Redirect a `/register?returnUrl=/reservation` — `RegisterComponent` salva `returnUrl` in `localStorage` (`pendingReturnUrl`)
+3. Registrazione riuscita → `/verification-sent`
+4. Utente clicca link email → `/verify-email?token=...` → API verify → logout automatico → `/verification-success?returnUrl=/reservation`
+5. `VerificationSuccessComponent` rileva `pendingReservation` in localStorage → mostra pulsante "Continua prenotazione"
+6. Click → `/login?requestedUrl=/reservation` → login → `authGuard` reindirizza a `/reservation`
+7. `ReservationComponent.restorePending()` ripopola il form → utente completa prenotazione
 
 ---
 
 ## Funzionalità
 
 1. **Landing page (Home)** — Hero section con CTA, sezioni Servizi, Chi siamo, Informazioni e footer. Animazioni fade-in basate su scroll (`@HostListener`).
-2. **Registrazione utente** — Form con nome, cognome, email, password. Validazione con required, email, minlength. Reindirizzamento a `verification-sent` al successo.
-3. **Verifica email** — Flusso in tre pagine: (a) "Verifica inviata" con pulsante di reinvio, (b) "Verifica email" che legge `?token=` dalla query e chiama l'API dopo 5 secondi, (c) "Verifica completata" con CTA per il login.
-4. **Login utente** — Form con email, password, checkbox "Ricordami", link "Password dimenticata?". Reindirizzamento all'URL richiesto originale o a `/home`.
+2. **Registrazione utente** — Form con nome, cognome, email, password. Validazione con required, email, minlength. Supporta parametro `returnUrl` per redirezione post-verifica. Reindirizzamento a `verification-sent` al successo.
+3. **Verifica email** — Flusso in tre pagine: (a) "Verifica inviata" (pulsante reinvio rimosso), (b) "Verifica email" che legge `?token=` dalla query e chiama l'API dopo 5 secondi, (c) "Verifica completata" con CTA per il login e pulsante "Continua prenotazione" se c'era una prenotazione in sospeso.
+4. **Login utente** — Form con email, password, checkbox "Ricordami", link "Password dimenticata?". Reindirizzamento all'URL richiesto originale (`requestedUrl`) o a `/home`.
 5. **Autenticazione JWT con refresh token** — Access token + refresh token in localStorage. Refresh automatico alla scadenza. Decodifica manuale base64 con controllo expiry.
-6. **Protezione rotte** — Auth guard sulle rotte `/reservation`, `/my-reservations`, `/profilo`. Reindirizzamento a `/login` se non autenticato.
+6. **Protezione rotte** — Auth guard sulle rotte `/my-reservations`, `/profilo`, `/reservation-success`. Reindirizzamento a `/login?requestedUrl=...` se non autenticato. La rotta `/reservation` è accessibile a tutti ma richiede auth al submit.
 7. **Navbar (Dashboard)** — Navbar fixed-top con brand "Bike Lab", link di navigazione, CTA prenotazione, pulsanti login/register o menu utente con profilo/prenotazioni/logout.
-8. **Prenotazione multi-step** — Wizard in 4 passaggi:
+8. **Prenotazione multi-step con ripristino stato** — Wizard in 4 passaggi:
    - **Sede**: selezione location da cards
    - **Data**: calendario personalizzato + slot orari (Mattina/Pomeriggio/Sera) per ritiro e riconsegna
    - **Bici**: filtro per tipologia/taglia, selezione biciclette disponibili
    - **Extra**: accessori e copertura assicurativa
    - Calcolo prezzo in tempo reale basato su periodi da mezza giornata (halfDateRate)
+   - **Persistenza locale**: salvataggio automatico in `localStorage` (`pendingReservation`) a ogni cambio step/modifica
+   - **Submit intelligente**: se utente non autenticato, salva stato e reindirizza a registrazione/login con `returnUrl`
+   - **Ripristino automatico**: al caricamento, ripopola form da `localStorage` se presente
    - Al completamento, reindirizzamento alla pagina di conferma `/reservation-success`
 9. **Pagina di conferma prenotazione** — Pagina di ringraziamento con animazioni, visualizzata dopo l'invio del form di prenotazione. Pulsanti per visualizzare le prenotazioni o tornare alla home.
 10. **Le mie prenotazioni** — Elenco prenotazioni raggruppate per stato: in_rental (attive), pending (correnti), completed, cancelled. Pulsante di cancellazione per prenotazioni pending.
